@@ -650,6 +650,18 @@
     }
 
     function addPhrase(t) { document.getElementById('writingAnswer').value += t + " "; }
+        // --- ÖZEL KARAKTER FONKSİYONU ---
+    function typeChar(char) {
+        let el = document.activeElement;
+        if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
+            let start = el.selectionStart;
+            let end = el.selectionEnd;
+            el.value = el.value.slice(0, start) + char + el.value.slice(end);
+            el.selectionStart = el.selectionEnd = start + 1;
+            autoSave(); 
+        }
+    }
+    
     function showDef(t) { 
         let simdi = new Date().toLocaleTimeString();
         examLogs.push("[" + simdi + "] Sözlük: " + t);
