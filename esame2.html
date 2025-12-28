@@ -264,6 +264,11 @@
 
         <div class="section">
             <h2>✍️ 3. GRAMMATICA</h2>
+                        <div style="background:#f1f3f5; padding:5px; margin:10px 0; border-radius:5px; text-align:center;">
+                <span style="font-size:0.9em; color:#333; margin-right:10px;">Özel Karakter Ekle:</span>
+                <button onmousedown="event.preventDefault(); typeChar('è')" style="font-size:1.2em; padding:5px 15px; cursor:pointer; font-weight:bold; background:white; border:1px solid #ccc; border-radius:4px;">è</button>
+                        </div>
+            
             <p style="font-size:0.9em; color:#666;">Completa con il passato prossimo:</p>
             
             <div class="question" style="line-height: 2.2; font-size: 1.1em;">
@@ -314,6 +319,16 @@
                 </details>
             </div>
 
+                        <div style="margin-bottom:8px; display:flex; gap:5px; flex-wrap:wrap; background:#f1f3f5; padding:8px; border-radius:5px;">
+                <span style="font-size:0.9em; width:100%; color:#333; margin-bottom:5px;">Özel Karakterler:</span>
+                <button onmousedown="event.preventDefault(); typeChar('à')" style="padding:5px 12px; font-size:1.1em; cursor:pointer; background:white; border:1px solid #ccc; border-radius:4px;">à</button>
+                <button onmousedown="event.preventDefault(); typeChar('è')" style="padding:5px 12px; font-size:1.1em; cursor:pointer; background:white; border:1px solid #ccc; border-radius:4px;">è</button>
+                <button onmousedown="event.preventDefault(); typeChar('é')" style="padding:5px 12px; font-size:1.1em; cursor:pointer; background:white; border:1px solid #ccc; border-radius:4px;">é</button>
+                <button onmousedown="event.preventDefault(); typeChar('ì')" style="padding:5px 12px; font-size:1.1em; cursor:pointer; background:white; border:1px solid #ccc; border-radius:4px;">ì</button>
+                <button onmousedown="event.preventDefault(); typeChar('ò')" style="padding:5px 12px; font-size:1.1em; cursor:pointer; background:white; border:1px solid #ccc; border-radius:4px;">ò</button>
+                <button onmousedown="event.preventDefault(); typeChar('ù')" style="padding:5px 12px; font-size:1.1em; cursor:pointer; background:white; border:1px solid #ccc; border-radius:4px;">ù</button>
+                        </div>
+            
             <textarea id="writingAnswer" rows="6" placeholder="Buraya yazın..." oninput="autoSave()"></textarea>
         </div>
 
