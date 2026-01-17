@@ -13,6 +13,7 @@ const OGRENCI_LISTESI = [
     "ÖZGÜR BARIS AYDIN",
     "ÖZLEM ILBI",
     "ŞÜKRÜ ÖZKAN"
+    "alper özkan"
     "Ali Karan Özkösemen"
     "Ata Kösegil"
     "Ata Öztürk"
