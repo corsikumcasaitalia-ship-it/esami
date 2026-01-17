@@ -5,27 +5,27 @@
 const OGRENCI_LISTESI = [
     "Azime Ertugay",
     "Elif Köseo",
-    "ELIF TASKIN KARACAY",
-    "GIZEM AYDIN",
-    "GULBIN OZTURK",
-    "IREM CINER",
-    "LEYLA ŞENGÜL COŞKUN",
-    "ÖZGÜR BARIS AYDIN",
-    "ÖZLEM ILBI",
-    "ŞÜKRÜ ÖZKAN"
-    "alper özkan"
-    "Ali Karan Özkösemen"
-    "Ata Kösegil"
-    "Ata Öztürk"
-    "Çağrı Ege Ay"
-    "Ceyda Aracıoğlu"
-    "Derin Rona"
-    "Eliz Kuşgöz"
-    "Eren Bölen"
-    "İrem Karakaya"
-    "Merve Ilgın Altı"
-    "Mira Kartaca"
-    "Nehir Özlü"
+    "Elif Taşkın Karaçay",
+    "Gizem Aydın",
+    "Gülbin Öztürk",
+    "İrem Ciner",
+    "Leyla Şengül Coşkun",
+    "Özgür Bariş Aydin",
+    "Özlem İlbi",
+    "Şükrü Özkan",
+    "Alper Özkan",
+    "Ali Karan Özkösemen",
+    "Ata Kösegil",
+    "Ata Öztürk",
+    "Çağrı Ege Ay",
+    "Ceyda Aracıoğlu",
+    "Derin Rona",
+    "Eliz Kuşgöz",
+    "Eren Bölen",
+    "İrem Karakaya",
+    "Merve Ilgın Altı",
+    "Mira Kartaca",
+    "Nehir Özlü",
     "Ada Targan"
 
 ];
