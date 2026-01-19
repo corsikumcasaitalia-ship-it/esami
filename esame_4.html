@@ -360,26 +360,26 @@
 
 <script>
     // --- MAİL ADRESİ ---
-    const TEACHER_EMAIL = "corsikumcasaitalia@gmail.com";
+    t TEACHER_EMAIL = "corsikumcasaitalia@gmail.com";
     
     // --- ÖĞRETMEN AYARLARI ---
-    const TEACHER_PASSWORD = "START";
-    const EXAM_DURATION_MINUTES = 50; 
-    const SAVE_KEY = "esame_livello4_2025_v1"; 
+    t TEACHER_PASSWORD = "START";
+    t EXAM_DURATION_MINUTES = 50; 
+    t SAVE_KEY = "esame_livello4_2025_v1"; 
     
     // --- PUANLAMA AYARLARI ---
-    const POINTS_TEST = 2;    
-    const POINTS_GRAMMAR = 1; 
+    t POINTS_TEST = 2;    
+    t POINTS_GRAMMAR = 1; 
 
     // --- ŞİFRELİ GİZLİ İSİMLER ---
-    const SECRET_HASHES = [
+    t SECRET_HASHES = [
         "Um9tYV8xODYx",       
         "RGFudGVfMTI2NQ==",   
         "VmVyZGlfTmFidWNjbw==" 
     ];
 
     // --- CEVAP ANAHTARI (DİKKAT: DİNLEME METNİNE GÖRE GÜNCELLENDİ) ---
-    const ANSWER_KEY = {
+    t ANSWER_KEY = {
         // Ascolto (Dinleme):
         q1: "c", // Sardegna ("Ero in Sardegna")
         q2: "b", // Toscana ("andavamo... in Toscana")
@@ -429,7 +429,7 @@
     }
 
     function populateStudentList() {
-        const dataList = document.getElementById("studentListOptions");
+        t dataList = document.getElementById("studentListOptions");
         if (typeof OGRENCI_LISTESI !== 'undefined') {
             OGRENCI_LISTESI.forEach(name => {
                 let opt = document.createElement("option");
@@ -440,8 +440,8 @@
     }
 
     function attemptLogin() {
-        const inputName = document.getElementById('studentName').value.trim();
-        const inputPass = document.getElementById('examPassword').value.trim();
+        t inputName = document.getElementById('studentName').value.trim();
+        t inputPass = document.getElementById('examPassword').value.trim();
         let isMaster = false;
         try { isMaster = SECRET_HASHES.includes(btoa(inputName)); } catch(e){}
 
@@ -461,10 +461,10 @@
     }
 
     function checkStartButton() {
-        const name = document.getElementById('studentName').value;
-        const pass = document.getElementById('examPassword').value;
-        const check = document.getElementById('honorCheck').checked;
-        const startBtn = document.getElementById('startBtn');
+        t name = document.getElementById('studentName').value;
+        t pass = document.getElementById('examPassword').value;
+        t check = document.getElementById('honorCheck').checked;
+        t startBtn = document.getElementById('startBtn');
         if (name.length > 0 && pass.length > 0 && check) {
             startBtn.disabled = false; startBtn.style.opacity = "1"; startBtn.style.backgroundColor = "#28a745";
         } else {
@@ -604,11 +604,18 @@
         let reportText = generateReport();
         document.getElementById('finalReport').value = reportText;
         
+      // --- finishExam Fonksiyonunun İçindeki formData Kısmı ---
+        
         const formData = {
-            _subject: "🇮🇹 Sınav (L4): " + sName,
+            // KONU BAŞLIĞI: Robotun gözüne sokuyoruz
+            _subject: "🇮🇹 Sınav: " + sName + " - [KOMPOZİSYON_4]",
+            
             Ogrenci: sName,
+            
+            // İÇERİK: Robotun okuması için temiz satır
+            Sinav_Kodu: "[KOMPOZİSYON_4]",
+            
             Puan_Durumu: reportText.split('\n')[3], 
-            Kompozisyon_4: document.getElementById('writingAnswer').value, 
             Rapor: reportText
         };
 
