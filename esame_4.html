@@ -360,46 +360,39 @@
 
 <script>
     // --- MAİL ADRESİ ---
-    t TEACHER_EMAIL = "corsikumcasaitalia@gmail.com";
+    const TEACHER_EMAIL = "corsikumcasaitalia@gmail.com";
     
     // --- ÖĞRETMEN AYARLARI ---
-    t TEACHER_PASSWORD = "START";
-    t EXAM_DURATION_MINUTES = 50; 
-    t SAVE_KEY = "esame_livello4_2025_v1"; 
+    const TEACHER_PASSWORD = "START"; // Şifreniz BURADA yazıyor.
+    const EXAM_DURATION_MINUTES = 50; 
+    const SAVE_KEY = "esame_livello4_2025_v1"; 
     
     // --- PUANLAMA AYARLARI ---
-    t POINTS_TEST = 2;    
-    t POINTS_GRAMMAR = 1; 
+    const POINTS_TEST = 2;    
+    const POINTS_GRAMMAR = 1; 
 
-    // --- ŞİFRELİ GİZLİ İSİMLER ---
-    t SECRET_HASHES = [
-        "Um9tYV8xODYx",       
-        "RGFudGVfMTI2NQ==",   
-        "VmVyZGlfTmFidWNjbw==" 
+    // --- MANUEL ÖĞRENCİ LİSTESİ (Dosya yoksa bunlar çıkar) ---
+    const MANUEL_OGRENCILER = [
+        "Didem_Hoca",
+        "Test_Ogrenci",
+        "Verdi_Nabucco",
+        "Roma_1861",
+        "Dante_1265"
     ];
 
-    // --- CEVAP ANAHTARI (DİKKAT: DİNLEME METNİNE GÖRE GÜNCELLENDİ) ---
-    t ANSWER_KEY = {
-        // Ascolto (Dinleme):
-        q1: "c", // Sardegna ("Ero in Sardegna")
-        q2: "b", // Toscana ("andavamo... in Toscana")
-        q3: "c", // andava poco al mare
-        q4: "b", // comprava il giornale
-        q5: "c", // ha conosciuto suo marito
-        
-        // Lettura (Okuma):
-        q6: "a", // famoso all'estero
-        q7: "b", // nome diverso (sbatudin)
-        q8: "b", // Aldo Campeol
-        q9: "a", // ingredienti di tante regioni
-        q10: "c", // persona straniera (Brezilyalı)
+    // --- ŞİFRELİ GİZLİ İSİMLER (YÖNETİCİ GİRİŞİ) ---
+    // Eğer Ad kısmına bunları yazarsanız şifre sormadan girer:
+    const SECRET_HASHES = [
+        "Um9tYV8xODYx",       // Roma_1861
+        "RGFudGVfMTI2NQ==",   // Dante_1265
+        "VmVyZGlfTmFidWNjbw==" // Verdi_Nabucco
+    ];
 
-        // Grammatica (Imperfetto):
-        g1: ["era"], 
-        g2: ["aveva"], 
-        g3: ["scopriva"], 
-        g4: ["erano"], 
-        g5: ["cercava"]
+    // --- CEVAP ANAHTARI ---
+    const ANSWER_KEY = {
+        q1: "c", q2: "b", q3: "c", q4: "b", q5: "c",
+        q6: "a", q7: "b", q8: "b", q9: "a", q10: "c",
+        g1: ["era"], g2: ["aveva"], g3: ["scopriva"], g4: ["erano"], g5: ["cercava"]
     };
 
     let timerInterval, violationCount = 0, examLogs = [], audioLimit = 2;
@@ -429,22 +422,25 @@
     }
 
     function populateStudentList() {
-        t dataList = document.getElementById("studentListOptions");
-        if (typeof OGRENCI_LISTESI !== 'undefined') {
-            OGRENCI_LISTESI.forEach(name => {
-                let opt = document.createElement("option");
-                opt.value = name;
-                dataList.appendChild(opt);
-            });
-        }
+        const dataList = document.getElementById("studentListOptions");
+        
+        // Önce dış dosyayı kontrol et, yoksa manuel listeyi kullan
+        let liste = (typeof OGRENCI_LISTESI !== 'undefined') ? OGRENCI_LISTESI : MANUEL_OGRENCILER;
+
+        liste.forEach(name => {
+            let opt = document.createElement("option");
+            opt.value = name;
+            dataList.appendChild(opt);
+        });
     }
 
     function attemptLogin() {
-        t inputName = document.getElementById('studentName').value.trim();
-        t inputPass = document.getElementById('examPassword').value.trim();
+        const inputName = document.getElementById('studentName').value.trim();
+        const inputPass = document.getElementById('examPassword').value.trim();
         let isMaster = false;
         try { isMaster = SECRET_HASHES.includes(btoa(inputName)); } catch(e){}
 
+        // Yönetici Girişi (Master)
         if (isMaster) {
             localStorage.removeItem(SAVE_KEY + "_status");
             localStorage.removeItem(SAVE_KEY + "_startTime");
@@ -453,18 +449,22 @@
             return;
         }
 
-        if (inputPass !== TEACHER_PASSWORD) { alert("❌ HATALI SINAV ŞİFRESİ!"); return; }
+        // Normal Öğrenci Girişi
+        if (inputPass !== TEACHER_PASSWORD) { alert("❌ HATALI SINAV ŞİFRESİ! (Şifre: START)"); return; }
         if (localStorage.getItem("LOCK_" + inputName) === "completed") { alert("⛔ BU ÖĞRENCİ SINAVI ZATEN TAMAMLADI!"); return; }
 
-        if (typeof OGRENCI_LISTESI !== 'undefined' && OGRENCI_LISTESI.includes(inputName)) { startExam(false); } 
-        else { alert("⛔ BU İSİMLE GİRİŞ YETKİNİZ YOK!"); }
+        // Listede var mı kontrolü
+        let liste = (typeof OGRENCI_LISTESI !== 'undefined') ? OGRENCI_LISTESI : MANUEL_OGRENCILER;
+        
+        if (liste.includes(inputName)) { startExam(false); } 
+        else { alert("⛔ BU İSİMLE GİRİŞ YETKİNİZ YOK! Lütfen listeden seçin."); }
     }
 
     function checkStartButton() {
-        t name = document.getElementById('studentName').value;
-        t pass = document.getElementById('examPassword').value;
-        t check = document.getElementById('honorCheck').checked;
-        t startBtn = document.getElementById('startBtn');
+        const name = document.getElementById('studentName').value;
+        const pass = document.getElementById('examPassword').value;
+        const check = document.getElementById('honorCheck').checked;
+        const startBtn = document.getElementById('startBtn');
         if (name.length > 0 && pass.length > 0 && check) {
             startBtn.disabled = false; startBtn.style.opacity = "1"; startBtn.style.backgroundColor = "#28a745";
         } else {
@@ -604,17 +604,11 @@
         let reportText = generateReport();
         document.getElementById('finalReport').value = reportText;
         
-      // --- finishExam Fonksiyonunun İçindeki formData Kısmı ---
-        
+        // --- FORM VERİSİ (SINAV 4 ETİKETLİ) ---
         const formData = {
-            // KONU BAŞLIĞI: Robotun gözüne sokuyoruz
-            _subject: "🇮🇹 Sınav: " + sName + " - [KOMPOZİSYON_4]",
-            
+            _subject: "🇮🇹 Sınav: " + sName + " - [KOMPOZİSYON_4]", // Konuya Kod Eklendi
             Ogrenci: sName,
-            
-            // İÇERİK: Robotun okuması için temiz satır
-            Sinav_Kodu: "[KOMPOZİSYON_4]",
-            
+            Sinav_Kodu: "[KOMPOZİSYON_4]", // İçeriğe Kod Eklendi
             Puan_Durumu: reportText.split('\n')[3], 
             Rapor: reportText
         };
@@ -682,6 +676,3 @@
     document.addEventListener('contextmenu', event => event.preventDefault());
     function restoreSession() { startExam(true); }
 </script>
-
-</body>
-</html>
