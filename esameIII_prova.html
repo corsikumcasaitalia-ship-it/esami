@@ -600,9 +600,10 @@
         let reportText = generateReport();
         document.getElementById('finalReport').value = reportText;
         
-        const formData = {
-            _subject: "🇮🇹 Sınav (L3): " + sName,
+   const formData = {
+            _subject: "🇮🇹 Sınav: " + sName + " - [KOMPOZİSYON_3]",
             Ogrenci: sName,
+            Sinav_Kodu: "[KOMPOZİSYON_3]",
             Puan_Durumu: reportText.split('\n')[3], 
             Rapor: reportText
         };
