@@ -14,18 +14,21 @@ const OGRENCI_LISTESI = [
     "Özlem İlbi",
     "Şükrü Özkan",
     "Alper Özkan",
-    "Ali Karan Özkösemen",
-    "Ata Kösegil",
-    "Ata Öztürk",
-    "Çağrı Ege Ay",
-    "Ceyda Aracıoğlu",
-    "Derin Rona",
-    "Eliz Kuşgöz",
-    "Eren Bölen",
-    "İrem Karakaya",
-    "Merve Ilgın Altı",
-    "Mira Kartaca",
-    "Nehir Özlü",
-    "Ada Targan"
+    "Primo Studente",
+    "Secondo Studente",
+    "Terzo Studente",
+    "Quarto Studente",
+    "Quinto Studente",
+    "Sesto Studente",
+    "Settimo Studente",
+    "Ottavo Studente",
+    "Nono Studente",
+    "Decimo Studente",
+    "Undicesimo Studente",
+    "Dodicesimo Studente",
+    "Tredicesimo Studente"
+    "Quattordicesimo Studente"
+    "Quindicesimo Studente"
+
 
 ];
