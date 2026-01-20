@@ -26,8 +26,8 @@ const OGRENCI_LISTESI = [
     "Decimo Studente",
     "Undicesimo Studente",
     "Dodicesimo Studente",
-    "Tredicesimo Studente"
-    "Quattordicesimo Studente"
+    "Tredicesimo Studente",
+    "Quattordicesimo Studente",
     "Quindicesimo Studente"
 
 
