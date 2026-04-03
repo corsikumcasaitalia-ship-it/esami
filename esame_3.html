@@ -361,50 +361,57 @@
     const TEACHER_EMAIL = "corsikumcasaitalia@gmail.com";
     
     // --- ÖĞRETMEN AYARLARI ---
-    const TEACHER_PASSWORD = "START";
-    const RESET_PASSWORD = "cavolo";
-    const EXAM_DURATION_MINUTES = 50; 
-    const SAVE_KEY = "esame_livello3_2025_v1"; 
-    
-    // --- PUANLAMA AYARLARI ---
-    const POINTS_TEST = 2;    
-    const POINTS_GRAMMAR = 1; 
+    const TEACHER_PASSWORD_HASH = "39f17ec6ebcf3cec37a06d85dc61882be3898d7573f284b7b41222087b6b6a2c";
+    const RESET_PASSWORD_HASH = "763220a8289fc632b75112da2d60e51f0f19f9577fedf4ad69d7be51d058167c";
+    const EXAM_DURATION_MINUTES = 50;
+    const SAVE_KEY = "esame_livello3_2025_v1";
 
-    // --- ŞİFRELİ GİZLİ İSİMLER ---
+    // --- PUANLAMA AYARLARI ---
+    const POINTS_TEST = 2;
+    const POINTS_GRAMMAR = 1;
+
+    // --- YÖNETİCİ ANAHTARLARI ---
     const SECRET_HASHES = [
-        "Um9tYV8xODYx",       
-        "RGFudGVfMTI2NQ==",   
-        "VmVyZGlfTmFidWNjbw==" 
+        "8a22cc777a5ce3e6a683cd238b163e2e8164d58220b2d63ce8b8b214e4d6bcb1",
+        "38c7d49bab57726458c44200edd19dec5505f8b4c64002d02b41ac422922011b",
+        "1c63c86d37f24b7c3fea52725d262443f17f5d2de809807c19554286561f0330"
     ];
 
-    // --- CEVAP ANAHTARI (DÜZENLEME GEREKEBİLİR) ---
+    // --- CEVAP ANAHTARI ---
+    const ANSWER_SALT = "R7n2bH6wQ_esame3";
     const ANSWER_KEY = {
-        // Ascolto (Dinleme):
-        q1: "c", q2: "a", q3: "c", q4: "b", q5: "a", 
-        
-        // Lettura (Okuma): Metne göre çıkarılmıştır.
-        q6: "c", // sevenler için
-        q7: "c", // farklı ülkeler
-        q8: "b", // 300.000 ziyaretçi
-        q9: "a", // hava güzel olursa (sereno)
-        q10: "c", // site veya gişe
-
-        // Grammatica: Metne göre doldurulmuştur (Futuro Semplice & Anteriore)
-        g1: ["andremo"], 
-        g2: ["avremo visitato"], 
-        g3: ["faremo"], 
-        g4: ["partiremo"], 
-        g5: ["verranno"]
+        q1: "e28ab358a50657fc56ff467be068d2d7d3772a1ece2efac5563850c23878d381",
+        q2: "8c8d9cf387536ed623235e336c3c329db8f5a20571b4b75d9990de8db75abfdc",
+        q3: "e28ab358a50657fc56ff467be068d2d7d3772a1ece2efac5563850c23878d381",
+        q4: "cc80daaa71f2069a70bb7047577ce83b1befc14be2bcbabfe74d2f6968508d22",
+        q5: "8c8d9cf387536ed623235e336c3c329db8f5a20571b4b75d9990de8db75abfdc",
+        q6: "e28ab358a50657fc56ff467be068d2d7d3772a1ece2efac5563850c23878d381",
+        q7: "e28ab358a50657fc56ff467be068d2d7d3772a1ece2efac5563850c23878d381",
+        q8: "cc80daaa71f2069a70bb7047577ce83b1befc14be2bcbabfe74d2f6968508d22",
+        q9: "8c8d9cf387536ed623235e336c3c329db8f5a20571b4b75d9990de8db75abfdc",
+        q10: "e28ab358a50657fc56ff467be068d2d7d3772a1ece2efac5563850c23878d381",
+        g1: ["ee51423843953322780c1548e7c6db36eeafead91620ce9c23c3512eed9c4e92"],
+        g2: ["3629caa9c1c226c340df3083f44da741c51d18dcc6037622166a9c775a65d076"],
+        g3: ["2b3fb1781531d3dc8ecd22a2b2f3576d0950d6f43a9d4536a999b4352a25f571"],
+        g4: ["9255fefaaa5e8dc1a2776a82126fa3bb30db5c08f733806eab47a04fc8bc3946"],
+        g5: ["ed54e0d2a950cf43178016be19736157d32d01dcd34dd28523d16731b4f9fe2e"]
     };
+
+    async function sha256(str) {
+        const enc = new TextEncoder().encode(str);
+        const buf = await crypto.subtle.digest('SHA-256', enc);
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
 
     let timerInterval, violationCount = 0, examLogs = [], audioLimit = 2;
 
-    window.onload = function() {
+    window.onload = async function() {
         populateStudentList();
         let savedData = {};
         try { savedData = JSON.parse(localStorage.getItem(SAVE_KEY)) || {}; } catch(e) { savedData = {}; }
 
-        let isMaster = (savedData.name) ? SECRET_HASHES.includes(btoa(savedData.name)) : false;
+        let isMaster = false;
+        if (savedData.name) { isMaster = SECRET_HASHES.includes(await sha256(savedData.name)); }
         if (isMaster) {
             document.getElementById('loginScreen').style.display = 'block';
             document.getElementById('examInterface').style.display = 'none';
@@ -434,11 +441,11 @@
         }
     }
 
-    function attemptLogin() {
+    async function attemptLogin() {
         const inputName = document.getElementById('studentName').value.trim();
         const inputPass = document.getElementById('examPassword').value.trim();
         let isMaster = false;
-        try { isMaster = SECRET_HASHES.includes(btoa(inputName)); } catch(e){}
+        try { isMaster = SECRET_HASHES.includes(await sha256(inputName)); } catch(e){}
 
         if (isMaster) {
             localStorage.removeItem(SAVE_KEY + "_status");
@@ -448,10 +455,11 @@
             return;
         }
 
-        if (inputPass !== TEACHER_PASSWORD) { alert("❌ HATALI SINAV ŞİFRESİ!"); return; }
+        const passHash = await sha256(inputPass);
+        if (passHash !== TEACHER_PASSWORD_HASH) { alert("❌ HATALI SINAV ŞİFRESİ!"); return; }
         if (localStorage.getItem("LOCK_" + inputName) === "completed") { alert("⛔ BU ÖĞRENCİ SINAVI ZATEN TAMAMLADI!"); return; }
 
-        if (typeof OGRENCI_LISTESI !== 'undefined' && OGRENCI_LISTESI.includes(inputName)) { startExam(false); } 
+        if (typeof OGRENCI_LISTESI !== 'undefined' && OGRENCI_LISTESI.includes(inputName)) { startExam(false); }
         else { alert("⛔ BU İSİMLE GİRİŞ YETKİNİZ YOK!"); }
     }
 
@@ -541,20 +549,20 @@
         }
     });
 
-    function generateReport() {
+    async function generateReport() {
         let data = JSON.parse(localStorage.getItem(SAVE_KEY)) || {};
         let totalScore = 0;
-        
+
         let report = "--- İTALYANCA SINAV SONUCU (LEVEL 3) ---\n";
         report += "Öğrenci: " + (data.name || "-") + "\n";
         report += "Tarih: " + new Date().toLocaleString() + "\n";
-        
+
         let details = "\n[TEST BÖLÜMÜ (Ascolto + Lettura) (20 Puan)]\n";
         if(data.answers) {
             for(let i=1; i<=10; i++) {
                 let ans = data.answers["q"+i];
-                let correct = ANSWER_KEY["q"+i];
-                let isCorrect = (ans === correct);
+                let ansHash = ans ? await sha256(ans.toLowerCase() + ANSWER_SALT) : '';
+                let isCorrect = (ansHash === ANSWER_KEY["q"+i]);
                 if(isCorrect) totalScore += POINTS_TEST;
                 details += i + ". " + (ans ? ans.toUpperCase() : "-") + " " + (isCorrect ? "✅" : "❌") + "\n";
             }
@@ -564,8 +572,8 @@
         if(data.grammar) {
             for(let i=1; i<=5; i++) {
                 let ans = (data.grammar["g"+i] || "").trim();
-                let correctOptions = ANSWER_KEY["g"+i]; 
-                let isCorrect = correctOptions.some(opt => opt.toLowerCase() === ans.toLowerCase());
+                let ansHash = await sha256(ans.toLowerCase() + ANSWER_SALT);
+                let isCorrect = ANSWER_KEY["g"+i].includes(ansHash);
                 if(isCorrect) totalScore += POINTS_GRAMMAR;
                 details += "G" + i + ": " + ans + " " + (isCorrect ? "✅" : "❌") + "\n";
             }
@@ -573,21 +581,21 @@
 
         report += "OTOMATİK PUAN: " + totalScore + " / 25\n";
         report += "İHLAL SAYISI: " + (data.violations || 0) + "\n";
-        report += "\n[DETAYLAR]\n" + details; 
+        report += "\n[DETAYLAR]\n" + details;
         report += "\n[KOMPOZİSYON_3]\n" + (data.writing || "-") + "\n";
-        
+
         report += "\n[LOGLAR]\n";
         if(data.logs) data.logs.forEach(log => { report += log + "\n"; });
-        
+
         return report;
     }
 
-    function finishExam(forced) {
+    async function finishExam(forced) {
         if(!forced && !confirm("Sınavı bitirmek ve hocaya göndermek istediğinize emin misiniz?")) return;
-        
-        clearInterval(timerInterval); 
+
+        clearInterval(timerInterval);
         autoSave();
-        
+
         const submitBtn = document.querySelector('.btn-submit');
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<div class="spinner"></div> Lütfen Bekleyin...';
@@ -595,8 +603,8 @@
         let sName = document.getElementById('displayName').innerText;
         localStorage.setItem("LOCK_" + sName, "completed");
         localStorage.setItem(SAVE_KEY + "_status", "completed");
-        
-        let reportText = generateReport();
+
+        let reportText = await generateReport();
         document.getElementById('finalReport').value = reportText;
         
    const formData = {
@@ -644,9 +652,11 @@
         }
     }
 
-    function hardReset() {
+    async function hardReset() {
         let pass = prompt("Sistemi sıfırlamak için Yönetici Şifresini girin:");
-        if(pass === "cavolo") { if(confirm("Tüm veriler silinecek!")) { localStorage.clear(); location.reload(); } } 
+        if (!pass) return;
+        const passHash = await sha256(pass);
+        if(passHash === RESET_PASSWORD_HASH) { if(confirm("Tüm veriler silinecek!")) { localStorage.clear(); location.reload(); } }
         else { alert("⛔ Şifre yanlış!"); }
     }
 
