@@ -103,6 +103,31 @@
         
         .spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; margin-right: 10px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        .word-count { font-size: 0.82em; color: #888; text-align: right; margin-top: 4px; }
+        .word-count.warn { color: #e67e22; font-weight: bold; }
+
+        .five-min-banner { display: none; background: #e67e22; color: white; text-align: center; padding: 10px; font-weight: bold; position: fixed; top: 0; left: 0; width: 100%; z-index: 2500; font-size: 0.95em; }
+
+        .restore-divider { display: flex; align-items: center; gap: 10px; margin: 15px 0; color: #aaa; font-size: 0.85em; }
+        .restore-divider::before, .restore-divider::after { content: ''; flex: 1; border-top: 1px solid #ddd; }
+
+        @media (max-width: 600px) {
+            .container { margin: 0; padding: 12px; border-radius: 0; }
+            #loginScreen { margin: 8px; padding: 15px; }
+            .sticky-header { flex-wrap: wrap; gap: 4px; padding: 8px 10px; font-size: 0.85em; }
+            .timer { font-size: 1.1em; }
+            h1 { font-size: 1.25em; }
+            h2 { font-size: 1.05em; }
+            .question { padding: 10px; }
+            .question label { padding: 10px 0; font-size: 1em; }
+            .question input[type="radio"] { transform: scale(1.5); margin-right: 12px; }
+            .inline-input { width: 90px !important; }
+            .chip { padding: 8px 12px; font-size: 0.9em; }
+            .btn { font-size: 16px; padding: 14px; }
+            audio { height: 44px; }
+            .reading-text { font-size: 0.95em; line-height: 1.7; }
+        }
     </style>
 </head>
 <body>
@@ -112,6 +137,9 @@
 <div id="cheatBanner" class="cheat-alert">
     ⚠️ UYARI: EKRANDAN AYRILDINIZ! <br>
     <span style="font-weight:normal; font-size:0.8em;">Bu durum kayıt altına alındı.</span>
+</div>
+<div id="fiveMinBanner" class="five-min-banner">
+    ⏰ SON 5 DAKİKA! Cevaplarınızı kontrol edin ve sınavı bitirmeyi unutmayın.
 </div>
 
 <div id="loginScreen">
@@ -129,6 +157,7 @@
     <button id="restoreBtn" class="btn btn-restore" onclick="restoreSession()">
         🔄 Önceki oturumunuz bulundu! <br><span style="font-size:0.8em">Kaldığınız yerden devam etmek için tıklayın.</span>
     </button>
+    <div id="restoreDivider" class="restore-divider" style="display:none;">veya yeni oturum başlat</div>
 
     <div id="newSessionForm">
         
@@ -334,6 +363,7 @@
             </div>
             
             <textarea id="writingAnswer" rows="6" placeholder="Buraya yazın..." oninput="autoSave()"></textarea>
+            <div id="wordCountDisplay" class="word-count">0 kelime</div>
         </div>
 
         <button class="btn btn-submit" onclick="finishExam(false)">SINAVI BİTİR VE GÖNDER</button>
@@ -403,7 +433,7 @@
         return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
     }
 
-    let timerInterval, violationCount = 0, examLogs = [], audioLimit = 2;
+    let timerInterval, violationCount = 0, examLogs = [], audioLimit = 2, fiveMinWarningShown = false;
 
     window.onload = async function() {
         populateStudentList();
@@ -424,9 +454,9 @@
             return; 
         }
 
-        if(localStorage.getItem(SAVE_KEY + "_startTime")) { 
-            document.getElementById('restoreBtn').style.display = 'block'; 
-            document.getElementById('newSessionForm').style.display = 'none'; 
+        if(localStorage.getItem(SAVE_KEY + "_startTime")) {
+            document.getElementById('restoreBtn').style.display = 'block';
+            document.getElementById('restoreDivider').style.display = 'flex';
         }
     }
 
@@ -503,6 +533,12 @@
         let m = Math.floor(remain / 60), s = remain % 60;
         document.getElementById('timerDisplay').innerText = (m<10?'0':'')+m + ":" + (s<10?'0':'')+s;
         if (remain <= 300) document.getElementById('timerDisplay').style.color = "red";
+        if (remain <= 300 && !fiveMinWarningShown) {
+            fiveMinWarningShown = true;
+            const banner = document.getElementById('fiveMinBanner');
+            banner.style.display = 'block';
+            setTimeout(() => { banner.style.display = 'none'; }, 8000);
+        }
         if(remain % 10 === 0) autoSave();
     }
 
@@ -513,6 +549,17 @@
         let data = { name: document.getElementById('displayName').innerText, writing: document.getElementById('writingAnswer').value, answers: answers, grammar: grammar, logs: examLogs, violations: violationCount };
         localStorage.setItem(SAVE_KEY, JSON.stringify(data));
         let st = document.getElementById('saveStatus'); if(st) { st.innerText = "Kaydedildi"; setTimeout(() => { st.innerText = ""; }, 1000); }
+        updateWordCount();
+    }
+
+    function updateWordCount() {
+        const ta = document.getElementById('writingAnswer');
+        if (!ta) return;
+        const words = ta.value.trim() === '' ? 0 : ta.value.trim().split(/\s+/).length;
+        const el = document.getElementById('wordCountDisplay');
+        if (!el) return;
+        el.textContent = words + ' kelime';
+        el.className = 'word-count' + (words > 0 && words < 60 ? ' warn' : '');
     }
 
     function restoreInputs() {
@@ -522,6 +569,7 @@
         if(data.answers) for(let i=1; i<=10; i++) { if(data.answers["q"+i]) { let el = document.querySelector(`input[name="q${i}"][value="${data.answers["q"+i]}"]`); if(el) el.checked = true; } }
         if(data.grammar) for(let i=1; i<=5; i++) { if(data.grammar["g"+i]) document.getElementById('g'+i).value = data.grammar["g"+i]; }
         if(data.writing) document.getElementById('writingAnswer').value = data.writing;
+        updateWordCount();
     }
 
     function checkAudioLimit() {
@@ -660,7 +708,7 @@
         else { alert("⛔ Şifre yanlış!"); }
     }
 
-    function addPhrase(t) { document.getElementById('writingAnswer').value += t + " "; }
+    function addPhrase(t) { document.getElementById('writingAnswer').value += t + " "; updateWordCount(); }
     function typeChar(char) {
         let el = document.activeElement;
         if (el && (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA')) {
@@ -678,7 +726,11 @@
         navigator.clipboard.writeText(c.value).then(()=>{ alert("Kopyalandı!"); });
     }
     document.addEventListener('contextmenu', event => event.preventDefault());
-    function restoreSession() { startExam(true); }
+    function restoreSession() {
+        if (confirm("Önceki oturumunuz kaldığı yerden devam edecek.\nCevaplarınız ve süreniz korunmuştur. Devam etmek istiyor musunuz?")) {
+            startExam(true);
+        }
+    }
 </script>
 
 </body>
