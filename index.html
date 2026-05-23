@@ -69,14 +69,30 @@
             cursor: not-allowed;
             pointer-events: none;
         }
+        .exam-btn.placement {
+            border-color: #e67e22;
+            background-color: #fff8f2;
+        }
+        .exam-btn.placement:hover {
+            border-color: #e67e22;
+            color: #e67e22;
+        }
         .badge {
             font-size: 0.8em;
             padding: 5px 10px;
             border-radius: 15px;
             color: white;
         }
-        .active { background-color: #28a745; } /* Yeşil */
-        .closed { background-color: #6c757d; } /* Gri */
+        .active { background-color: #28a745; }
+        .closed { background-color: #6c757d; }
+        .placement-badge { background-color: #e67e22; }
+        .placement-label {
+            font-size: 0.72em;
+            color: #e67e22;
+            display: block;
+            font-weight: normal;
+            margin-top: 3px;
+        }
         
         footer {
             margin-top: 30px;
@@ -93,6 +109,22 @@
     <p>Lütfen girmek istediğiniz sınavı seçiniz:</p>
 
     <div class="exam-list">
+
+        <a href="classificazione_1.html" class="exam-btn placement">
+            <span>
+                Seviye Tespit Sınavı — Parte 1
+                <span class="placement-label">Livello 2–5 &nbsp;·&nbsp; A1.2 → B1.1</span>
+            </span>
+            <span class="badge placement-badge">Aktif</span>
+        </a>
+
+        <a href="classificazione_2.html" class="exam-btn placement">
+            <span>
+                Seviye Tespit Sınavı — Parte 2
+                <span class="placement-label">Livello 6–9 &nbsp;·&nbsp; B1.2 → C1.1</span>
+            </span>
+            <span class="badge placement-badge">Aktif</span>
+        </a>
 
         <a href="#" class="exam-btn disabled">
             <span>Telafi Sınavı (Yakında)</span>
