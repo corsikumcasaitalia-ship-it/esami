@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>IKM - Seviye Tespit Sınavı (Parte 2)</title>
+    <style>
+        body { font-family: 'Segoe UI', Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+        .container { max-width: 900px; margin: 10px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); padding-bottom: 100px; display: none; }
+        #loginScreen { max-width: 460px; margin: 30px auto; background: white; padding: 28px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
+        #resultScreen { max-width: 600px; margin: 40px auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; display: none; }
+        .sticky-header { position: sticky; top: 0; background: #e67e22; color: white; padding: 10px 20px; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .timer { font-size: 1.3em; font-weight: bold; color: #fff; font-family: monospace; }
+        h1 { color: #e67e22; font-size: 1.7em; margin-bottom: 5px; }
+        .level-header { background: #e67e22; color: white; padding: 12px; border-radius: 5px; margin: 40px 0 20px 0; font-size: 1.2em; font-weight: bold; }
+        .question-block { margin-bottom: 22px; padding: 14px; border: 1px solid #e0e0e0; border-radius: 8px; background: #fafafa; }
+        .question-text { font-weight: 600; margin-bottom: 10px; display: block; font-size: 1.05em; color: #333; }
+        .options-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        .options-grid label { padding: 10px; background: #fff; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; display: flex; align-items: center; }
+        .options-grid label:hover { background: #fff3e0; border-color: #e67e22; }
+        .options-grid input[type="radio"] { margin-right: 10px; transform: scale(1.2); }
+        .matching-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 5px solid #2196f3; }
+        .matching-item { font-size: 0.95em; margin-bottom: 8px; padding: 5px; background: white; border-radius: 4px; border: 1px solid #bbdefb; }
+        .matching-select { width: 100%; padding: 7px; margin-top: 4px; border: 1px solid #90caf9; border-radius: 4px; font-size: 0.88em; }
+        .btn { display: block; width: 100%; padding: 15px; border: none; font-size: 18px; font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.2s; }
+        .btn-start { background: #e67e22; color: white; margin-top: 20px; }
+        .btn-start:hover { background: #d35400; }
+        .btn-submit { background: #28a745; color: white; margin-top: 40px; box-shadow: 0 4px 10px rgba(40,167,69,0.3); }
+        .btn-restore { background: #ffc107; color: #333; margin-bottom: 10px; font-size: 15px; display: none; }
+        .btn-reset { background: #dc3545; color: white; margin-top: 20px; font-size: 14px; padding: 10px; }
+        .btn-copy { background: #6f42c1; color: white; margin-top: 10px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 1em; }
+        .honor-code { background: #fff3cd; padding: 12px; border: 1px solid #ffeeba; border-radius: 5px; margin: 15px 0; font-size: 0.85em; text-align: left; }
+        .honor-code label { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; }
+        .tech-note { background: #e8f4f8; color: #0c5460; border: 1px solid #bee5eb; padding: 12px; border-radius: 5px; font-size: 0.85em; text-align: left; margin-bottom: 15px; }
+        .save-toast { position: fixed; bottom: 20px; right: 20px; background: #333; color: white; padding: 10px 20px; border-radius: 5px; opacity: 0; transition: opacity 0.3s; z-index: 2000; pointer-events: none; }
+        .cheat-alert { display: none; background: #e74c3c; color: white; text-align: center; padding: 10px; font-weight: bold; position: fixed; top: 0; left: 0; width: 100%; z-index: 3000; font-size: 0.9em; }
+        .five-min-banner { display: none; background: #e67e22; color: white; text-align: center; padding: 10px; font-weight: bold; position: fixed; top: 0; left: 0; width: 100%; z-index: 2500; font-size: 0.9em; }
+        .result-box { width: 100%; height: 280px; font-family: monospace; font-size: 0.85em; background: #f8f9fa; border: 1px solid #ccc; margin-top: 10px; }
+        .logo { width: 110px; margin-bottom: 15px; }
+        .restore-divider { display: flex; align-items: center; gap: 10px; margin: 12px 0; color: #aaa; font-size: 0.85em; }
+        .restore-divider::before, .restore-divider::after { content: ''; flex: 1; border-top: 1px solid #ddd; }
+        @media (max-width: 600px) {
+            .container { margin: 0; padding: 12px; border-radius: 0; }
+            #loginScreen { margin: 8px; padding: 15px; }
+            .matching-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="saveToast" class="save-toast">Kaydedildi</div>
+<div id="cheatBanner" class="cheat-alert">UYARI: EKRANDAN AYRILDINIZ! Bu durum kayit altina alindi.</div>
+<div id="fiveMinBanner" class="five-min-banner">SON 5 DAKIKA! Cevaplarınızı kontrol edin.</div>
+
+<div id="loginScreen">
+    <img src="https://it-istanbul.com/wp-content/uploads/2021/04/it-istanbul-logo.png" class="logo" alt="IKM Logo" onerror="this.style.display='none'">
+    <h1>&#127470;&#127481; Seviye Tespit Sinavi</h1>
+    <p style="color:#e67e22; font-weight:bold; margin:0;">Parte 2 &mdash; Livello 6&rarr;9 (B1.2 &rarr; C1.1)</p>
+    <p style="color:#666; font-size:0.9em;">50 soru &middot; 60 dakika</p>
+
+    <div class="tech-note">
+        <strong>Onemli:</strong> Sayfa kapansa bile ayni cihaz + ayni tarayiciyla tekrar giris yapin, kaldığınız yerden devam edersiniz.
+    </div>
+
+    <button id="restoreBtn" class="btn btn-restore" onclick="restoreSession()">
+        Onceki oturumunuz bulundu &mdash; kaldiginiz yerden devam edin
+    </button>
+    <div id="restoreDivider" class="restore-divider" style="display:none;">veya yeni oturum basla</div>
+
+    <div id="newSessionForm">
+        <div style="background:#fff3e0; border:2px solid #e67e22; padding:12px; border-radius:8px; margin-bottom:15px; text-align:left;">
+            <label style="color:#e67e22; font-weight:bold;">Sinav Giris Kodu:</label>
+            <input type="password" id="examPassword" placeholder="Ogretmeninizden aldiginiz sifre..." oninput="checkStart()">
+        </div>
+        <div style="text-align:left;">
+            <label><strong>Adiniz Soyadiniz:</strong></label>
+            <input type="text" id="studentName" placeholder="Adinizi ve soyadinizi yaziniz..." oninput="checkStart()">
+        </div>
+        <div class="honor-code">
+            <label>
+                <input type="checkbox" id="honorCheck" onchange="checkStart()">
+                <span>Sekme degistirmeyecegimi ve kopya cekmeyecegimi taahut ediyorum.</span>
+            </label>
+        </div>
+        <button id="startBtn" class="btn btn-start" onclick="attemptLogin()" disabled style="opacity:0.5;">GIRIS YAP VE SINAVI BASLAT</button>
+    </div>
+</div>
+
+<div id="examInterface" style="display:none;">
+    <div class="sticky-header">
+        <div><strong id="displayName">...</strong></div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <span style="font-size:0.85em; opacity:0.9;">Kalan:</span>
+            <div class="timer" id="timerDisplay">60:00</div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <div class="level-header">6&deg; LIVELLO &mdash; B1.2</div>
+
+        <div class="question-block">
+            <span class="question-text">54. (1) ________ con Rita: (2) ________ domani verso le sette e mezzo al Bar Lume.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin-bottom:2px;">(1)</div>
+                <label><input type="radio" name="q54_1" value="a" onchange="autoSave()"> a. sente</label>
+                <label><input type="radio" name="q54_1" value="b" onchange="autoSave()"> b. ci ho sentito</label>
+                <label><input type="radio" name="q54_1" value="c" onchange="autoSave()"> c. mi sono sentito</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q54_2" value="a" onchange="autoSave()"> a. ci incontreremo</label>
+                <label><input type="radio" name="q54_2" value="b" onchange="autoSave()"> b. la incontrer&agrave;</label>
+                <label><input type="radio" name="q54_2" value="c" onchange="autoSave()"> c. si incontreranno</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">55. La ditta di Angelo (1) ________ davvero in una brutta situazione economica, oggi per&ograve; (2) ________.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin-bottom:2px;">(1)</div>
+                <label><input type="radio" name="q55_1" value="a" onchange="autoSave()"> a. si trovava</label>
+                <label><input type="radio" name="q55_1" value="b" onchange="autoSave()"> b. ci trovava</label>
+                <label><input type="radio" name="q55_1" value="c" onchange="autoSave()"> c. ci si trovava</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q55_2" value="a" onchange="autoSave()"> a. deve riprendersi</label>
+                <label><input type="radio" name="q55_2" value="b" onchange="autoSave()"> b. si &egrave; ripresa</label>
+                <label><input type="radio" name="q55_2" value="c" onchange="autoSave()"> c. ha ripreso</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">56. Che cosa ha Giorgio? (1) ________ perch&eacute; ha perso le chiavi della macchina.</span>
+            <div class="options-grid">
+                <label><input type="radio" name="q56" value="a" onchange="autoSave()"> a. si arrabbia</label>
+                <label><input type="radio" name="q56" value="b" onchange="autoSave()"> b. si &egrave; arrabbiato</label>
+                <label><input type="radio" name="q56" value="c" onchange="autoSave()"> c. si era arrabbiato</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">57. Il nonno (1) ________ il maglione perch&eacute; sentiva freddo. Quando (2) ________ bisogna stare attenti!</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q57_1" value="a" onchange="autoSave()"> a. si metteva</label>
+                <label><input type="radio" name="q57_1" value="b" onchange="autoSave()"> b. si mette</label>
+                <label><input type="radio" name="q57_1" value="c" onchange="autoSave()"> c. ha dovuto mettersi</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q57_2" value="a" onchange="autoSave()"> a. si &egrave; anziano</label>
+                <label><input type="radio" name="q57_2" value="b" onchange="autoSave()"> b. si &egrave; anziani</label>
+                <label><input type="radio" name="q57_2" value="c" onchange="autoSave()"> c. si &egrave; anziana</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">58. Maria non (1) ________ laureare a giugno e ha dovuto aspettare fino a dicembre.</span>
+            <div class="options-grid">
+                <label><input type="radio" name="q58" value="a" onchange="autoSave()"> a. ha potuto</label>
+                <label><input type="radio" name="q58" value="b" onchange="autoSave()"> b. si &egrave; potuta</label>
+                <label><input type="radio" name="q58" value="c" onchange="autoSave()"> c. si ha potuto</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">59. Scusi, per andare in centro quale autobus devo prendere? (1) ________ se prende il 121.</span>
+            <div class="options-grid">
+                <label><input type="radio" name="q59" value="a" onchange="autoSave()"> a. &egrave; utile</label>
+                <label><input type="radio" name="q59" value="b" onchange="autoSave()"> b. &egrave; facile</label>
+                <label><input type="radio" name="q59" value="c" onchange="autoSave()"> c. &egrave; meglio</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">60. Roberta, (1) ________ di passare il fine settimana fuori citt&agrave;? (2) ________ una bella idea.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q60_1" value="a" onchange="autoSave()"> a. a perch&eacute;</label>
+                <label><input type="radio" name="q60_1" value="b" onchange="autoSave()"> b. che ne dici</label>
+                <label><input type="radio" name="q60_1" value="c" onchange="autoSave()"> c. andiamo</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q60_2" value="a" onchange="autoSave()"> a. penso che</label>
+                <label><input type="radio" name="q60_2" value="b" onchange="autoSave()"> b. secondo me</label>
+                <label><input type="radio" name="q60_2" value="c" onchange="autoSave()"> c. la trovo</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">61. I soldi che abbiamo vinto alla lotteria (1) ________ permetteranno di fare una bella vacanza.</span>
+            <div class="options-grid">
+                <label><input type="radio" name="q61" value="a" onchange="autoSave()"> a. le</label>
+                <label><input type="radio" name="q61" value="b" onchange="autoSave()"> b. ci</label>
+                <label><input type="radio" name="q61" value="c" onchange="autoSave()"> c. gli</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">62. Ho incontrato Rita e Franco e (1) ________ ho detto di passare da casa per un caff&egrave;. (2) ________ hanno promesso che verranno.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q62_1" value="a" onchange="autoSave()"> a. gli</label>
+                <label><input type="radio" name="q62_1" value="b" onchange="autoSave()"> b. le</label>
+                <label><input type="radio" name="q62_1" value="c" onchange="autoSave()"> c. loro</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q62_2" value="a" onchange="autoSave()"> a. mi</label>
+                <label><input type="radio" name="q62_2" value="b" onchange="autoSave()"> b. ci</label>
+                <label><input type="radio" name="q62_2" value="c" onchange="autoSave()"> c. gli</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">63. Per il mio compleanno (1) ________ un cellulare. Se domani sei libero, (2) ________ di venire con me per (3) ________ uno?</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q63_1" value="a" onchange="autoSave()"> a. voglio regalare</label>
+                <label><input type="radio" name="q63_1" value="b" onchange="autoSave()"> b. regalare</label>
+                <label><input type="radio" name="q63_1" value="c" onchange="autoSave()"> c. voglio regalarmi</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q63_2" value="a" onchange="autoSave()"> a. ti va</label>
+                <label><input type="radio" name="q63_2" value="b" onchange="autoSave()"> b. ci va</label>
+                <label><input type="radio" name="q63_2" value="c" onchange="autoSave()"> c. gli va</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(3)</div>
+                <label><input type="radio" name="q63_3" value="a" onchange="autoSave()"> a. sceglierne</label>
+                <label><input type="radio" name="q63_3" value="b" onchange="autoSave()"> b. sceglierci</label>
+                <label><input type="radio" name="q63_3" value="c" onchange="autoSave()"> c. sceglierti</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">64. Scusami (1) ________ dov'&egrave; l'ufficio postale? S&igrave;, certo: (2) ________ e poi gira subito a destra.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q64_1" value="a" onchange="autoSave()"> a. sapete dirmi</label>
+                <label><input type="radio" name="q64_1" value="b" onchange="autoSave()"> b. sai dirmi</label>
+                <label><input type="radio" name="q64_1" value="c" onchange="autoSave()"> c. sai dire</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q64_2" value="a" onchange="autoSave()"> a. prenda a sinistra</label>
+                <label><input type="radio" name="q64_2" value="b" onchange="autoSave()"> b. prendi sinistra</label>
+                <label><input type="radio" name="q64_2" value="c" onchange="autoSave()"> c. prendi la prima a sinistra</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">65. (1) ________ la verit&agrave;, non (2) ________ nel dubbio.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q65_1" value="a" onchange="autoSave()"> a. dimmi</label>
+                <label><input type="radio" name="q65_1" value="b" onchange="autoSave()"> b. dire</label>
+                <label><input type="radio" name="q65_1" value="c" onchange="autoSave()"> c. non dirmi</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q65_2" value="a" onchange="autoSave()"> a. mi lascia</label>
+                <label><input type="radio" name="q65_2" value="b" onchange="autoSave()"> b. mi lasci</label>
+                <label><input type="radio" name="q65_2" value="c" onchange="autoSave()"> c. lasciarmi</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">66. (1) ________ subito! (2) ________ a Lucia e (3) ________ di venire subito perch&eacute; siamo in ritardo.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q66_1" value="a" onchange="autoSave()"> a. alzati</label>
+                <label><input type="radio" name="q66_1" value="b" onchange="autoSave()"> b. vuoi alzarti</label>
+                <label><input type="radio" name="q66_1" value="c" onchange="autoSave()"> c. ti alzi</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q66_2" value="a" onchange="autoSave()"> a. grida</label>
+                <label><input type="radio" name="q66_2" value="b" onchange="autoSave()"> b. chiama</label>
+                <label><input type="radio" name="q66_2" value="c" onchange="autoSave()"> c. telefona</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(3)</div>
+                <label><input type="radio" name="q66_3" value="a" onchange="autoSave()"> a. dilla</label>
+                <label><input type="radio" name="q66_3" value="b" onchange="autoSave()"> b. digli</label>
+                <label><input type="radio" name="q66_3" value="c" onchange="autoSave()"> c. dille</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">67. Unisci le frasi di A con le frasi di B (Matching):</span>
+            <div class="matching-grid">
+                <div>
+                    <div class="matching-item">1. Quando mi farai una visita?</div>
+                    <div class="matching-item">2. Gli ho telefonato alle 10</div>
+                    <div class="matching-item">3. Mi preoccupo</div>
+                    <div class="matching-item">4. Sa dov'&egrave; la Banca Toscana?</div>
+                    <div class="matching-item">5. Se ti piace questo vestito</div>
+                    <div class="matching-item">6. Cerco un parcheggio da un'ora</div>
+                    <div class="matching-item">7. Signor direttore</div>
+                    <div class="matching-item">8. Come ti sembra questo modello?</div>
+                    <div class="matching-item">9. Se vedi Umberto</div>
+                </div>
+                <div>
+                    <select id="m67_1" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 1 --</option><option value="a">a. Pensavo di venire domani</option><option value="b">b. Puoi prenderlo</option><option value="c">c. Se non mi telefoni</option><option value="d">d. Le confermo che l'appuntamento e' per domani</option><option value="e">e. Al terzo incrocio a sinistra</option><option value="f">f. Ma lui era gia' uscito</option><option value="g">g. Puoi dirgli che devo parlargli?</option><option value="h">h. Ma non ne vedo nessuno</option><option value="i">i. Mah, forse e' un po' troppo classico</option></select>
+                    <select id="m67_2" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 2 --</option><option value="a">a. Pensavo di venire domani</option><option value="b">b. Puoi prenderlo</option><option value="c">c. Se non mi telefoni</option><option value="d">d. Le confermo che l'appuntamento e' per domani</option><option value="e">e. Al terzo incrocio a sinistra</option><option value="f">f. Ma lui era gia' uscito</option><option value="g">g. Puoi dirgli che devo parlargli?</option><option value="h">h. Ma non ne vedo nessuno</option><option value="i">i. Mah, forse e' un po' troppo classico</option></select>
+                    <select id="m67_3" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 3 --</option><option value="a">a. Pensavo di venire domani</option><option value="b">b. Puoi prenderlo</option><option value="c">c. Se non mi telefoni</option><option value="d">d. Le confermo che l'appuntamento e' per domani</option><option value="e">e. Al terzo incrocio a sinistra</option><option value="f">f. Ma lui era gia' uscito</option><option value="g">g. Puoi dirgli che devo parlargli?</option><option value="h">h. Ma non ne vedo nessuno</option><option value="i">i. Mah, forse e' un po' troppo classico</option></select>
+                    <select id="m67_4" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 4 --</option><option value="a">a. Pensavo di venire domani</option><option value="b">b. Puoi prenderlo</option><option value="c">c. Se non mi telefoni</option><option value="d">d. Le confermo che l'appuntamento e' per domani</option><option value="e">e. Al terzo incrocio a sinistra</option><option value="f">f. Ma lui era gia' uscito</option><option value="g">g. Puoi dirgli che devo parlargli?</option><option value="h">h. Ma non ne vedo nessuno</option><option value="i">i. Mah, forse e' un po' troppo classico</option></select>
+                    <select id="m67_5" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 5 --</option><option value="a">a. Pensavo di venire domani</option><option value="b">b. Puoi prenderlo</option><option value="c">c. Se non mi telefoni</option><option value="d">d. Le confermo che l'appuntamento e' per domani</option><option value="e">e. Al terzo incrocio a sinistra</option><option value="f">f. Ma lui era gia' uscito</option><option value="g">g. Puoi dirgli che devo parlargli?</option><option value="h">h. Ma non ne vedo nessuno</option><option value="i">i. Mah, forse e' un po' troppo classico</option></select>
+                    <select id="m67_6" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 6 --</option><option value="a">a. Pensavo di venire domani</option><option value="b">b. Puoi prenderlo</option><option value="c">c. Se non mi telefoni</option><option value="d">d. Le confermo che l'appuntamento e' per domani</option><option value="e">e. Al terzo incrocio a sinistra</option><option value="f">f. Ma lui era gia' uscito</option><option value="g">g. Puoi dirgli che devo parlargli?</option><option value="h">h. Ma non ne vedo nessuno</option><option value="i">i. Mah, forse e' un po' troppo classico</option></select>
+                    <select id="m67_7" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 7 --</option><option value="a">a. Pensavo di venire domani</option><option value="b">b. Puoi prenderlo</option><option value="c">c. Se non mi telefoni</option><option value="d">d. Le confermo che l'appuntamento e' per domani</option><option value="e">e. Al terzo incrocio a sinistra</option><option value="f">f. Ma lui era gia' uscito</option><option value="g">g. Puoi dirgli che devo parlargli?</option><option value="h">h. Ma non ne vedo nessuno</option><option value="i">i. Mah, forse e' un po' troppo classico</option></select>
+                    <select id="m67_8" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 8 --</option><option value="a">a. Pensavo di venire domani</option><option value="b">b. Puoi prenderlo</option><option value="c">c. Se non mi telefoni</option><option value="d">d. Le confermo che l'appuntamento e' per domani</option><option value="e">e. Al terzo incrocio a sinistra</option><option value="f">f. Ma lui era gia' uscito</option><option value="g">g. Puoi dirgli che devo parlargli?</option><option value="h">h. Ma non ne vedo nessuno</option><option value="i">i. Mah, forse e' un po' troppo classico</option></select>
+                    <select id="m67_9" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 9 --</option><option value="a">a. Pensavo di venire domani</option><option value="b">b. Puoi prenderlo</option><option value="c">c. Se non mi telefoni</option><option value="d">d. Le confermo che l'appuntamento e' per domani</option><option value="e">e. Al terzo incrocio a sinistra</option><option value="f">f. Ma lui era gia' uscito</option><option value="g">g. Puoi dirgli che devo parlargli?</option><option value="h">h. Ma non ne vedo nessuno</option><option value="i">i. Mah, forse e' un po' troppo classico</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="level-header">7&deg; LIVELLO &mdash; B2.1</div>
+
+        <div class="question-block">
+            <span class="question-text">68. Chiara, (1) ________ una domanda da farti: cosa (2) ________ tu al nostro posto?</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q68_1" value="a" onchange="autoSave()"> a. avremmo</label>
+                <label><input type="radio" name="q68_1" value="b" onchange="autoSave()"> b. avremo</label>
+                <label><input type="radio" name="q68_1" value="c" onchange="autoSave()"> c. avevamo</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q68_2" value="a" onchange="autoSave()"> a. staresti</label>
+                <label><input type="radio" name="q68_2" value="b" onchange="autoSave()"> b. fai</label>
+                <label><input type="radio" name="q68_2" value="c" onchange="autoSave()"> c. faresti</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">69. Non so dov'&egrave; Marco. Mi ha detto che quando (1) ________ di lavorare (2) ________ ma non &egrave; ancora arrivato.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q69_1" value="a" onchange="autoSave()"> a. finirebbe</label>
+                <label><input type="radio" name="q69_1" value="b" onchange="autoSave()"> b. finir&agrave;</label>
+                <label><input type="radio" name="q69_1" value="c" onchange="autoSave()"> c. avrebbe finito</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q69_2" value="a" onchange="autoSave()"> a. sar&agrave; venuto</label>
+                <label><input type="radio" name="q69_2" value="b" onchange="autoSave()"> b. verrebbe</label>
+                <label><input type="radio" name="q69_2" value="c" onchange="autoSave()"> c. sarebbe venuto</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">70. Cosa dici? Sabato andiamo al concerto di Vasco Rossi? (1) ________ volentieri, ma a me (2) ________ un terribile mal di testa.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q70_1" value="a" onchange="autoSave()"> a. sarebbe bello</label>
+                <label><input type="radio" name="q70_1" value="b" onchange="autoSave()"> b. preferirei</label>
+                <label><input type="radio" name="q70_1" value="c" onchange="autoSave()"> c. piacerebbe</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q70_2" value="a" onchange="autoSave()"> a. non saremo usciti</label>
+                <label><input type="radio" name="q70_2" value="b" onchange="autoSave()"> b. saremo usciti</label>
+                <label><input type="radio" name="q70_2" value="c" onchange="autoSave()"> c. saremmo usciti</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">71. Ieri sera (1) ________ di voi ha letto l'ultimo libro di Lucarelli? (2) ________ ? Quello scritto con Camilleri, Acqua in bocca?</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q71_1" value="a" onchange="autoSave()"> a. chi</label>
+                <label><input type="radio" name="q71_1" value="b" onchange="autoSave()"> b. quale</label>
+                <label><input type="radio" name="q71_1" value="c" onchange="autoSave()"> c. che</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q71_2" value="a" onchange="autoSave()"> a. che cosa</label>
+                <label><input type="radio" name="q71_2" value="b" onchange="autoSave()"> b. quanto</label>
+                <label><input type="radio" name="q71_2" value="c" onchange="autoSave()"> c. quale</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">72. Io (1) ________ al mare con te, ma domani (2) ________ i miei genitori e tutti insieme (3) ________ il fine settimana a Siena.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q72_1" value="a" onchange="autoSave()"> a. verrei</label>
+                <label><input type="radio" name="q72_1" value="b" onchange="autoSave()"> b. sarei venuto</label>
+                <label><input type="radio" name="q72_1" value="c" onchange="autoSave()"> c. verr&ograve;</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q72_2" value="a" onchange="autoSave()"> a. arriveranno</label>
+                <label><input type="radio" name="q72_2" value="b" onchange="autoSave()"> b. sono arrivati</label>
+                <label><input type="radio" name="q72_2" value="c" onchange="autoSave()"> c. arriverebbero</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(3)</div>
+                <label><input type="radio" name="q72_3" value="a" onchange="autoSave()"> a. passeranno</label>
+                <label><input type="radio" name="q72_3" value="b" onchange="autoSave()"> b. passeremo</label>
+                <label><input type="radio" name="q72_3" value="c" onchange="autoSave()"> c. passeremmo</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">73. Sandro, hai detto a Patrizia di venire a pranzo da noi domani e di non (1) ________ niente? Certo, (2) ________ ieri, ma il gelato (3) ________ porter&agrave; di sicuro.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q73_1" value="a" onchange="autoSave()"> a. portarne</label>
+                <label><input type="radio" name="q73_1" value="b" onchange="autoSave()"> b. porta</label>
+                <label><input type="radio" name="q73_1" value="c" onchange="autoSave()"> c. portarci</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q73_2" value="a" onchange="autoSave()"> a. gliel'ho ricordato</label>
+                <label><input type="radio" name="q73_2" value="b" onchange="autoSave()"> b. le ho ricordato</label>
+                <label><input type="radio" name="q73_2" value="c" onchange="autoSave()"> c. gliel'ho ricordata</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(3)</div>
+                <label><input type="radio" name="q73_3" value="a" onchange="autoSave()"> a. ce lo</label>
+                <label><input type="radio" name="q73_3" value="b" onchange="autoSave()"> b. ne</label>
+                <label><input type="radio" name="q73_3" value="c" onchange="autoSave()"> c. se lo</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">74. Non credo che Paolo (1) ________ in tempo per l'inizio del concerto.</span>
+            <div class="options-grid">
+                <label><input type="radio" name="q74" value="a" onchange="autoSave()"> a. arriverebbe</label>
+                <label><input type="radio" name="q74" value="b" onchange="autoSave()"> b. arriver&agrave;</label>
+                <label><input type="radio" name="q74" value="c" onchange="autoSave()"> c. sarebbe arrivato</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">75. (1) ________ di stare attenti con il coltello, adesso (2) ________ e fate un altro gioco.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q75_1" value="a" onchange="autoSave()"> a. li avevo detti</label>
+                <label><input type="radio" name="q75_1" value="b" onchange="autoSave()"> b. ve l'avevo detto</label>
+                <label><input type="radio" name="q75_1" value="c" onchange="autoSave()"> c. ce l'avevo detto</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q75_2" value="a" onchange="autoSave()"> a. ve lo date</label>
+                <label><input type="radio" name="q75_2" value="b" onchange="autoSave()"> b. gliela date</label>
+                <label><input type="radio" name="q75_2" value="c" onchange="autoSave()"> c. me lo date</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">76. Ti &egrave; piaciuta la torta? Moltissimo, puoi (1) ________ un altro pezzo?</span>
+            <div class="options-grid">
+                <label><input type="radio" name="q76" value="a" onchange="autoSave()"> a. dargliela</label>
+                <label><input type="radio" name="q76" value="b" onchange="autoSave()"> b. darmela</label>
+                <label><input type="radio" name="q76" value="c" onchange="autoSave()"> c. darmene</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">77. (1) ________ ricordate di Simone? Certo! Quel tipo antipaticissimo! Cosa (2) ________ ? Niente. Sar&agrave; il nostro nuovo direttore! No! (3) ________</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q77_1" value="a" onchange="autoSave()"> a. vi</label>
+                <label><input type="radio" name="q77_1" value="b" onchange="autoSave()"> b. mi</label>
+                <label><input type="radio" name="q77_1" value="c" onchange="autoSave()"> c. gli</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q77_2" value="a" onchange="autoSave()"> a. gli &egrave; successo</label>
+                <label><input type="radio" name="q77_2" value="b" onchange="autoSave()"> b. ci &egrave; successo</label>
+                <label><input type="radio" name="q77_2" value="c" onchange="autoSave()"> c. ti ha fatto</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(3)</div>
+                <label><input type="radio" name="q77_3" value="a" onchange="autoSave()"> a. Quale?</label>
+                <label><input type="radio" name="q77_3" value="b" onchange="autoSave()"> b. Si figuri!</label>
+                <label><input type="radio" name="q77_3" value="c" onchange="autoSave()"> c. Non ce lo dire!</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">78. Unisci le frasi di A con le frasi di B (Matching):</span>
+            <div class="matching-grid">
+                <div>
+                    <div class="matching-item">1. Me lo riporti domani, no?</div>
+                    <div class="matching-item">2. Scusa, la colpa &egrave; tutta mia?</div>
+                    <div class="matching-item">3. Allora, hai trovato lavoro?</div>
+                    <div class="matching-item">4. Sai dov'&egrave; il libro d'italiano?</div>
+                    <div class="matching-item">5. Carla ha aperto un conto corrente</div>
+                    <div class="matching-item">6. Avremmo preso in affitto quella casa</div>
+                    <div class="matching-item">7. Ieri ho visto un film</div>
+                    <div class="matching-item">8. Hai sentito che Luca ha lasciato il lavoro?</div>
+                </div>
+                <div>
+                    <select id="m78_1" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 1 --</option><option value="a">a. Per ricevere soldi dai suoi</option><option value="b">b. Si, non ti preoccupare</option><option value="c">c. Che mi e' piaciuto moltissimo</option><option value="d">d. Non fa niente</option><option value="e">e. Dovrebbe essere nel primo scaffale</option><option value="f">f. Davvero???</option><option value="g">g. Purtroppo non ancora</option><option value="h">h. Ma purtroppo era troppo cara</option></select>
+                    <select id="m78_2" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 2 --</option><option value="a">a. Per ricevere soldi dai suoi</option><option value="b">b. Si, non ti preoccupare</option><option value="c">c. Che mi e' piaciuto moltissimo</option><option value="d">d. Non fa niente</option><option value="e">e. Dovrebbe essere nel primo scaffale</option><option value="f">f. Davvero???</option><option value="g">g. Purtroppo non ancora</option><option value="h">h. Ma purtroppo era troppo cara</option></select>
+                    <select id="m78_3" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 3 --</option><option value="a">a. Per ricevere soldi dai suoi</option><option value="b">b. Si, non ti preoccupare</option><option value="c">c. Che mi e' piaciuto moltissimo</option><option value="d">d. Non fa niente</option><option value="e">e. Dovrebbe essere nel primo scaffale</option><option value="f">f. Davvero???</option><option value="g">g. Purtroppo non ancora</option><option value="h">h. Ma purtroppo era troppo cara</option></select>
+                    <select id="m78_4" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 4 --</option><option value="a">a. Per ricevere soldi dai suoi</option><option value="b">b. Si, non ti preoccupare</option><option value="c">c. Che mi e' piaciuto moltissimo</option><option value="d">d. Non fa niente</option><option value="e">e. Dovrebbe essere nel primo scaffale</option><option value="f">f. Davvero???</option><option value="g">g. Purtroppo non ancora</option><option value="h">h. Ma purtroppo era troppo cara</option></select>
+                    <select id="m78_5" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 5 --</option><option value="a">a. Per ricevere soldi dai suoi</option><option value="b">b. Si, non ti preoccupare</option><option value="c">c. Che mi e' piaciuto moltissimo</option><option value="d">d. Non fa niente</option><option value="e">e. Dovrebbe essere nel primo scaffale</option><option value="f">f. Davvero???</option><option value="g">g. Purtroppo non ancora</option><option value="h">h. Ma purtroppo era troppo cara</option></select>
+                    <select id="m78_6" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 6 --</option><option value="a">a. Per ricevere soldi dai suoi</option><option value="b">b. Si, non ti preoccupare</option><option value="c">c. Che mi e' piaciuto moltissimo</option><option value="d">d. Non fa niente</option><option value="e">e. Dovrebbe essere nel primo scaffale</option><option value="f">f. Davvero???</option><option value="g">g. Purtroppo non ancora</option><option value="h">h. Ma purtroppo era troppo cara</option></select>
+                    <select id="m78_7" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 7 --</option><option value="a">a. Per ricevere soldi dai suoi</option><option value="b">b. Si, non ti preoccupare</option><option value="c">c. Che mi e' piaciuto moltissimo</option><option value="d">d. Non fa niente</option><option value="e">e. Dovrebbe essere nel primo scaffale</option><option value="f">f. Davvero???</option><option value="g">g. Purtroppo non ancora</option><option value="h">h. Ma purtroppo era troppo cara</option></select>
+                    <select id="m78_8" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 8 --</option><option value="a">a. Per ricevere soldi dai suoi</option><option value="b">b. Si, non ti preoccupare</option><option value="c">c. Che mi e' piaciuto moltissimo</option><option value="d">d. Non fa niente</option><option value="e">e. Dovrebbe essere nel primo scaffale</option><option value="f">f. Davvero???</option><option value="g">g. Purtroppo non ancora</option><option value="h">h. Ma purtroppo era troppo cara</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="level-header">8&deg; LIVELLO &mdash; B2.2</div>
+
+        <div class="question-block">
+            <span class="question-text">80. Le ragioni (1) ________ sono arrabbiato le conosce bene Francesco (2) ________ &egrave; stato la causa.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q80_1" value="a" onchange="autoSave()"> a. per cui</label>
+                <label><input type="radio" name="q80_1" value="b" onchange="autoSave()"> b. con le quali</label>
+                <label><input type="radio" name="q80_1" value="c" onchange="autoSave()"> c. su cui</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q80_2" value="a" onchange="autoSave()"> a. da cui</label>
+                <label><input type="radio" name="q80_2" value="b" onchange="autoSave()"> b. il quale</label>
+                <label><input type="radio" name="q80_2" value="c" onchange="autoSave()"> c. che ne</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">81. Nella mia classe siamo in 15, (1) ________ una ragazza tedesca, Ingrid, (2) ________ &egrave; veramente intelligente.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q81_1" value="a" onchange="autoSave()"> a. da cui</label>
+                <label><input type="radio" name="q81_1" value="b" onchange="autoSave()"> b. tra cui</label>
+                <label><input type="radio" name="q81_1" value="c" onchange="autoSave()"> c. la cui</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q81_2" value="a" onchange="autoSave()"> a. la cui</label>
+                <label><input type="radio" name="q81_2" value="b" onchange="autoSave()"> b. che</label>
+                <label><input type="radio" name="q81_2" value="c" onchange="autoSave()"> c. per cui</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">82. La ditta (1) ________ lavorar&ograve; ha sedi in tutto il mondo e la citt&agrave; (2) ________ mi manderanno sar&agrave; Londra.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q82_1" value="a" onchange="autoSave()"> a. che</label>
+                <label><input type="radio" name="q82_1" value="b" onchange="autoSave()"> b. a cui</label>
+                <label><input type="radio" name="q82_1" value="c" onchange="autoSave()"> c. con cui</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q82_2" value="a" onchange="autoSave()"> a. per cui</label>
+                <label><input type="radio" name="q82_2" value="b" onchange="autoSave()"> b. in cui</label>
+                <label><input type="radio" name="q82_2" value="c" onchange="autoSave()"> c. da cui</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">83. Francesco, tutto (1) ________ fai &egrave; sbagliato, (2) ________ ti procurer&agrave; problemi in futuro.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q83_1" value="a" onchange="autoSave()"> a. che</label>
+                <label><input type="radio" name="q83_1" value="b" onchange="autoSave()"> b. quello che</label>
+                <label><input type="radio" name="q83_1" value="c" onchange="autoSave()"> c. cosa</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q83_2" value="a" onchange="autoSave()"> a. quello che</label>
+                <label><input type="radio" name="q83_2" value="b" onchange="autoSave()"> b. il che</label>
+                <label><input type="radio" name="q83_2" value="c" onchange="autoSave()"> c. che</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">84. (1) ________ fa da s&egrave; fa per tre.</span>
+            <div class="options-grid">
+                <label><input type="radio" name="q84" value="a" onchange="autoSave()"> a. il quale</label>
+                <label><input type="radio" name="q84" value="b" onchange="autoSave()"> b. chi</label>
+                <label><input type="radio" name="q84" value="c" onchange="autoSave()"> c. che</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">85. Maria, che cosa (1) ________ ? Ho finito di prepararmi e (2) ________.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q85_1" value="a" onchange="autoSave()"> a. fa</label>
+                <label><input type="radio" name="q85_1" value="b" onchange="autoSave()"> b. stai fare</label>
+                <label><input type="radio" name="q85_1" value="c" onchange="autoSave()"> c. stai facendo</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q85_2" value="a" onchange="autoSave()"> a. sto uscire</label>
+                <label><input type="radio" name="q85_2" value="b" onchange="autoSave()"> b. esci</label>
+                <label><input type="radio" name="q85_2" value="c" onchange="autoSave()"> c. sto per uscire</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">86. Gentile (1) ________ Direttore — Le porgiamo (2) ________ Saluti — Un (3) ________ a te e a Sara.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q86_1" value="a" onchange="autoSave()"> a. Egregio</label>
+                <label><input type="radio" name="q86_1" value="b" onchange="autoSave()"> b. Dottor</label>
+                <label><input type="radio" name="q86_1" value="c" onchange="autoSave()"> c. Signor</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q86_2" value="a" onchange="autoSave()"> a. Tanti</label>
+                <label><input type="radio" name="q86_2" value="b" onchange="autoSave()"> b. Distinti</label>
+                <label><input type="radio" name="q86_2" value="c" onchange="autoSave()"> c. Cordialmente</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(3)</div>
+                <label><input type="radio" name="q86_3" value="a" onchange="autoSave()"> a. caro</label>
+                <label><input type="radio" name="q86_3" value="b" onchange="autoSave()"> b. abbraccio</label>
+                <label><input type="radio" name="q86_3" value="c" onchange="autoSave()"> c. saluti</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">87. Scusi, avrei (1) ________ di un'informazione: perch&eacute; questo viaggio a Vienna &egrave; (2) ________ costoso quello a Berlino?</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q87_1" value="a" onchange="autoSave()"> a. esigenza</label>
+                <label><input type="radio" name="q87_1" value="b" onchange="autoSave()"> b. bisogno</label>
+                <label><input type="radio" name="q87_1" value="c" onchange="autoSave()"> c. necessit&agrave;</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q87_2" value="a" onchange="autoSave()"> a. meno.....di</label>
+                <label><input type="radio" name="q87_2" value="b" onchange="autoSave()"> b. pi&ugrave;....del</label>
+                <label><input type="radio" name="q87_2" value="c" onchange="autoSave()"> c. tanta...quanta</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">88. Marco &egrave; il bambino (1) ________ vivace classe.</span>
+            <div class="options-grid">
+                <label><input type="radio" name="q88" value="a" onchange="autoSave()"> a. il pi&ugrave;....della</label>
+                <label><input type="radio" name="q88" value="b" onchange="autoSave()"> b. maggiore...della</label>
+                <label><input type="radio" name="q88" value="c" onchange="autoSave()"> c. pi&ugrave;....della</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">89. Non avere problemi, (1) ________ con il tuo capo: &egrave; (2) ________ difficile quel che sembra.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q89_1" value="a" onchange="autoSave()"> a. parlane</label>
+                <label><input type="radio" name="q89_1" value="b" onchange="autoSave()"> b. dillo</label>
+                <label><input type="radio" name="q89_1" value="c" onchange="autoSave()"> c. parlaci</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q89_2" value="a" onchange="autoSave()"> a. pi&ugrave;...del</label>
+                <label><input type="radio" name="q89_2" value="b" onchange="autoSave()"> b. meno...di</label>
+                <label><input type="radio" name="q89_2" value="c" onchange="autoSave()"> c. tanto...quanto</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">90. L'inflazione quest'anno &egrave; cresciuta: &egrave; stata (1) ________ previsioni.</span>
+            <div class="options-grid">
+                <label><input type="radio" name="q90" value="a" onchange="autoSave()"> a. massima alle</label>
+                <label><input type="radio" name="q90" value="b" onchange="autoSave()"> b. migliore alle</label>
+                <label><input type="radio" name="q90" value="c" onchange="autoSave()"> c. superiore alle</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">91. La gente continua a (1) ________ dalle grandi citt&agrave; e la loro nuova (2) ________ sono le cittadine e i paesi di provincia.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q91_1" value="a" onchange="autoSave()"> a. venirsene</label>
+                <label><input type="radio" name="q91_1" value="b" onchange="autoSave()"> b. andarsene</label>
+                <label><input type="radio" name="q91_1" value="c" onchange="autoSave()"> c. rimanerci</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q91_2" value="a" onchange="autoSave()"> a. intenzione</label>
+                <label><input type="radio" name="q91_2" value="b" onchange="autoSave()"> b. fine</label>
+                <label><input type="radio" name="q91_2" value="c" onchange="autoSave()"> c. meta</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">92. (1) ________ e non tornare mai pi&ugrave;!</span>
+            <div class="options-grid">
+                <label><input type="radio" name="q92" value="a" onchange="autoSave()"> a. me ne vado</label>
+                <label><input type="radio" name="q92" value="b" onchange="autoSave()"> b. te ne vai</label>
+                <label><input type="radio" name="q92" value="c" onchange="autoSave()"> c. vattene</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">93. Unisci le frasi di A con le frasi di B (Matching):</span>
+            <div class="matching-grid">
+                <div>
+                    <div class="matching-item">1. Che tempo fa da voi?</div>
+                    <div class="matching-item">2. Ami molto lo sport, no?</div>
+                    <div class="matching-item">3. Luisa &egrave; molto ospitale</div>
+                    <div class="matching-item">4. Ti chiamo uno di questi giorni</div>
+                    <div class="matching-item">5. Ti sei trovata bene?</div>
+                    <div class="matching-item">6. Secondo te &egrave; vero?</div>
+                    <div class="matching-item">7. Che lavoro fa Guido?</div>
+                </div>
+                <div>
+                    <select id="m93_1" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 1 --</option><option value="a">a. Bellissimo!</option><option value="b">b. No, sono tutte scuse!</option><option value="c">c. Mi sa che e' medico</option><option value="d">d. Si, ti fa sentire come a casa tua</option><option value="e">e. Non posso farne a meno</option><option value="f">f. Ci conto!</option><option value="g">g. Niente affatto!</option></select>
+                    <select id="m93_2" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 2 --</option><option value="a">a. Bellissimo!</option><option value="b">b. No, sono tutte scuse!</option><option value="c">c. Mi sa che e' medico</option><option value="d">d. Si, ti fa sentire come a casa tua</option><option value="e">e. Non posso farne a meno</option><option value="f">f. Ci conto!</option><option value="g">g. Niente affatto!</option></select>
+                    <select id="m93_3" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 3 --</option><option value="a">a. Bellissimo!</option><option value="b">b. No, sono tutte scuse!</option><option value="c">c. Mi sa che e' medico</option><option value="d">d. Si, ti fa sentire come a casa tua</option><option value="e">e. Non posso farne a meno</option><option value="f">f. Ci conto!</option><option value="g">g. Niente affatto!</option></select>
+                    <select id="m93_4" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 4 --</option><option value="a">a. Bellissimo!</option><option value="b">b. No, sono tutte scuse!</option><option value="c">c. Mi sa che e' medico</option><option value="d">d. Si, ti fa sentire come a casa tua</option><option value="e">e. Non posso farne a meno</option><option value="f">f. Ci conto!</option><option value="g">g. Niente affatto!</option></select>
+                    <select id="m93_5" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 5 --</option><option value="a">a. Bellissimo!</option><option value="b">b. No, sono tutte scuse!</option><option value="c">c. Mi sa che e' medico</option><option value="d">d. Si, ti fa sentire come a casa tua</option><option value="e">e. Non posso farne a meno</option><option value="f">f. Ci conto!</option><option value="g">g. Niente affatto!</option></select>
+                    <select id="m93_6" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 6 --</option><option value="a">a. Bellissimo!</option><option value="b">b. No, sono tutte scuse!</option><option value="c">c. Mi sa che e' medico</option><option value="d">d. Si, ti fa sentire come a casa tua</option><option value="e">e. Non posso farne a meno</option><option value="f">f. Ci conto!</option><option value="g">g. Niente affatto!</option></select>
+                    <select id="m93_7" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 7 --</option><option value="a">a. Bellissimo!</option><option value="b">b. No, sono tutte scuse!</option><option value="c">c. Mi sa che e' medico</option><option value="d">d. Si, ti fa sentire come a casa tua</option><option value="e">e. Non posso farne a meno</option><option value="f">f. Ci conto!</option><option value="g">g. Niente affatto!</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div class="level-header">9&deg; LIVELLO &mdash; C1.1</div>
+
+        <div class="question-block">
+            <span class="question-text">94. I lavori per la costruzione della Torre di Pisa (1) ________ nel 1173 e (2) ________ nel 1350.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q94_1" value="a" onchange="autoSave()"> a. inizio</label>
+                <label><input type="radio" name="q94_1" value="b" onchange="autoSave()"> b. inizi&ograve;</label>
+                <label><input type="radio" name="q94_1" value="c" onchange="autoSave()"> c. iniziarono</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q94_2" value="a" onchange="autoSave()"> a. fin&igrave;</label>
+                <label><input type="radio" name="q94_2" value="b" onchange="autoSave()"> b. finirono</label>
+                <label><input type="radio" name="q94_2" value="c" onchange="autoSave()"> c. fine</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">95. In quell'occasione (1) ________ veramente paura: (2) ________ immobili senza riuscire a (3) ________.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q95_1" value="a" onchange="autoSave()"> a. avemmo</label>
+                <label><input type="radio" name="q95_1" value="b" onchange="autoSave()"> b. avremmo avuto</label>
+                <label><input type="radio" name="q95_1" value="c" onchange="autoSave()"> c. avemmo</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q95_2" value="a" onchange="autoSave()"> a. rimarremo</label>
+                <label><input type="radio" name="q95_2" value="b" onchange="autoSave()"> b. rimanemmo</label>
+                <label><input type="radio" name="q95_2" value="c" onchange="autoSave()"> c. rimarremmo</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(3)</div>
+                <label><input type="radio" name="q95_3" value="a" onchange="autoSave()"> a. parlare</label>
+                <label><input type="radio" name="q95_3" value="b" onchange="autoSave()"> b. parlammo</label>
+                <label><input type="radio" name="q95_3" value="c" onchange="autoSave()"> c. parlavamo</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">96. Agli inizi del 1990, in Italia, (1) ________ un grande scandalo politico che (2) ________ il nome di Tangentopoli.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q96_1" value="a" onchange="autoSave()"> a. scoppi&ograve;</label>
+                <label><input type="radio" name="q96_1" value="b" onchange="autoSave()"> b. scop&ograve;</label>
+                <label><input type="radio" name="q96_1" value="c" onchange="autoSave()"> c. scapp&ograve;</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q96_2" value="a" onchange="autoSave()"> a. prendette</label>
+                <label><input type="radio" name="q96_2" value="b" onchange="autoSave()"> b. prese</label>
+                <label><input type="radio" name="q96_2" value="c" onchange="autoSave()"> c. aveva preso</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">97. Carlo Collodi, il cui vero nome (1) ________ Carlo Lorenzini, (2) ________ a scrivere Le avventure di Pinocchio nel 1880. Prima le public&ograve; a puntate e solo nel 1883 (3) ________ il libro che (4) ________ il capolavoro della letteratura italiana dell'Ottocento pi&ugrave; conosciuto nel mondo.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q97_1" value="a" onchange="autoSave()"> a. era</label>
+                <label><input type="radio" name="q97_1" value="b" onchange="autoSave()"> b. fu stato</label>
+                <label><input type="radio" name="q97_1" value="c" onchange="autoSave()"> c. era</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q97_2" value="a" onchange="autoSave()"> a. cominciava</label>
+                <label><input type="radio" name="q97_2" value="b" onchange="autoSave()"> b. cominci&ograve;</label>
+                <label><input type="radio" name="q97_2" value="c" onchange="autoSave()"> c. aveva cominciato</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(3)</div>
+                <label><input type="radio" name="q97_3" value="a" onchange="autoSave()"> a. uscii</label>
+                <label><input type="radio" name="q97_3" value="b" onchange="autoSave()"> b. usci</label>
+                <label><input type="radio" name="q97_3" value="c" onchange="autoSave()"> c. usc&igrave;</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(4)</div>
+                <label><input type="radio" name="q97_4" value="a" onchange="autoSave()"> a. divenne</label>
+                <label><input type="radio" name="q97_4" value="b" onchange="autoSave()"> b. divento</label>
+                <label><input type="radio" name="q97_4" value="c" onchange="autoSave()"> c. fu divenuto</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">98. (1) ________ i provvedimenti necessari non appena (2) ________ la gravit&agrave; della situazione.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q98_1" value="a" onchange="autoSave()"> a. ebbe preso</label>
+                <label><input type="radio" name="q98_1" value="b" onchange="autoSave()"> b. prese</label>
+                <label><input type="radio" name="q98_1" value="c" onchange="autoSave()"> c. prend&egrave;</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q98_2" value="a" onchange="autoSave()"> a. capiva</label>
+                <label><input type="radio" name="q98_2" value="b" onchange="autoSave()"> b. capirebbe</label>
+                <label><input type="radio" name="q98_2" value="c" onchange="autoSave()"> c. ebbe capito</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">99. Sono gi&agrave; le 8! Se continui a chiacchierare, (1) ________ il treno. Non credo, dubito che il treno (2) ________ in orario.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q99_1" value="a" onchange="autoSave()"> a. perda</label>
+                <label><input type="radio" name="q99_1" value="b" onchange="autoSave()"> b. perderai</label>
+                <label><input type="radio" name="q99_1" value="c" onchange="autoSave()"> c. perdersti</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q99_2" value="a" onchange="autoSave()"> a. parta</label>
+                <label><input type="radio" name="q99_2" value="b" onchange="autoSave()"> b. parte</label>
+                <label><input type="radio" name="q99_2" value="c" onchange="autoSave()"> c. partirebbe</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">100. Bambini, vi ho preparato una cena buonissima. Desidero che (1) ________ tutto e che non (2) ________ troppa coca-cola.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q100_1" value="a" onchange="autoSave()"> a. mangiate</label>
+                <label><input type="radio" name="q100_1" value="b" onchange="autoSave()"> b. mangiare</label>
+                <label><input type="radio" name="q100_1" value="c" onchange="autoSave()"> c. mangereste</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q100_2" value="a" onchange="autoSave()"> a. berrete</label>
+                <label><input type="radio" name="q100_2" value="b" onchange="autoSave()"> b. beviate</label>
+                <label><input type="radio" name="q100_2" value="c" onchange="autoSave()"> c. bere</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">101. (1) ________ si &egrave; laureata con il massimo dei voti, Marinella non crede di (2) ________ trovare lavoro qui in Italia, per questo pensa di (3) ________ a lavorare all'estero.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q101_1" value="a" onchange="autoSave()"> a. anche se</label>
+                <label><input type="radio" name="q101_1" value="b" onchange="autoSave()"> b. affinch&eacute;</label>
+                <label><input type="radio" name="q101_1" value="c" onchange="autoSave()"> c. poich&eacute;</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q101_2" value="a" onchange="autoSave()"> a. possa</label>
+                <label><input type="radio" name="q101_2" value="b" onchange="autoSave()"> b. pu&ograve;</label>
+                <label><input type="radio" name="q101_2" value="c" onchange="autoSave()"> c. potere</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(3)</div>
+                <label><input type="radio" name="q101_3" value="a" onchange="autoSave()"> a. vada</label>
+                <label><input type="radio" name="q101_3" value="b" onchange="autoSave()"> b. andata</label>
+                <label><input type="radio" name="q101_3" value="c" onchange="autoSave()"> c. andare</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">102. (1) ________ Loredana mi (2) ________ una bugia, (3) ________ sempre mia amica.</span>
+            <div class="options-grid">
+                <div style="font-size:0.85em;color:#777;margin:0 0 2px;">(1)</div>
+                <label><input type="radio" name="q102_1" value="a" onchange="autoSave()"> a. basta che</label>
+                <label><input type="radio" name="q102_1" value="b" onchange="autoSave()"> b. prima che</label>
+                <label><input type="radio" name="q102_1" value="c" onchange="autoSave()"> c. malgrado</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q102_2" value="a" onchange="autoSave()"> a. abbia detto</label>
+                <label><input type="radio" name="q102_2" value="b" onchange="autoSave()"> b. ha detto</label>
+                <label><input type="radio" name="q102_2" value="c" onchange="autoSave()"> c. dice</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(3)</div>
+                <label><input type="radio" name="q102_3" value="a" onchange="autoSave()"> a. mi considerer&ograve;</label>
+                <label><input type="radio" name="q102_3" value="b" onchange="autoSave()"> b. le considero</label>
+                <label><input type="radio" name="q102_3" value="c" onchange="autoSave()"> c. la considero</label>
+            </div>
+        </div>
+
+        <div class="question-block">
+            <span class="question-text">103. Unisci le frasi di A con le frasi di B (Matching):</span>
+            <div class="matching-grid">
+                <div>
+                    <div class="matching-item">1. Allora pensi di studiare Medicina?</div>
+                    <div class="matching-item">2. Ho saputo che si sono lasciati!</div>
+                    <div class="matching-item">3. In Italia la monarchia</div>
+                    <div class="matching-item">4. Suo padre lo porta con s&eacute;</div>
+                    <div class="matching-item">5. Ma tu perch&eacute; hai detto quella cosa?</div>
+                    <div class="matching-item">6. Luca continua ad andare a lavorare</div>
+                    <div class="matching-item">7. Sono felice che Rita</div>
+                </div>
+                <div>
+                    <select id="m103_1" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 1 --</option><option value="a">a. Affinche' impari il lavoro</option><option value="b">b. Sia arrivata in tempo</option><option value="c">c. Anche se ha l'influenza</option><option value="d">d. Neanche per sogno! Mi iscrivero' a Biologia!</option><option value="e">e. Duro' fino al 1946</option><option value="f">f. Gia'! L'ho capito quando ho visto Maria da sola</option><option value="g">g. Cosi', tanto per attaccare discorso</option></select>
+                    <select id="m103_2" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 2 --</option><option value="a">a. Affinche' impari il lavoro</option><option value="b">b. Sia arrivata in tempo</option><option value="c">c. Anche se ha l'influenza</option><option value="d">d. Neanche per sogno! Mi iscrivero' a Biologia!</option><option value="e">e. Duro' fino al 1946</option><option value="f">f. Gia'! L'ho capito quando ho visto Maria da sola</option><option value="g">g. Cosi', tanto per attaccare discorso</option></select>
+                    <select id="m103_3" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 3 --</option><option value="a">a. Affinche' impari il lavoro</option><option value="b">b. Sia arrivata in tempo</option><option value="c">c. Anche se ha l'influenza</option><option value="d">d. Neanche per sogno! Mi iscrivero' a Biologia!</option><option value="e">e. Duro' fino al 1946</option><option value="f">f. Gia'! L'ho capito quando ho visto Maria da sola</option><option value="g">g. Cosi', tanto per attaccare discorso</option></select>
+                    <select id="m103_4" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 4 --</option><option value="a">a. Affinche' impari il lavoro</option><option value="b">b. Sia arrivata in tempo</option><option value="c">c. Anche se ha l'influenza</option><option value="d">d. Neanche per sogno! Mi iscrivero' a Biologia!</option><option value="e">e. Duro' fino al 1946</option><option value="f">f. Gia'! L'ho capito quando ho visto Maria da sola</option><option value="g">g. Cosi', tanto per attaccare discorso</option></select>
+                    <select id="m103_5" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 5 --</option><option value="a">a. Affinche' impari il lavoro</option><option value="b">b. Sia arrivata in tempo</option><option value="c">c. Anche se ha l'influenza</option><option value="d">d. Neanche per sogno! Mi iscrivero' a Biologia!</option><option value="e">e. Duro' fino al 1946</option><option value="f">f. Gia'! L'ho capito quando ho visto Maria da sola</option><option value="g">g. Cosi', tanto per attaccare discorso</option></select>
+                    <select id="m103_6" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 6 --</option><option value="a">a. Affinche' impari il lavoro</option><option value="b">b. Sia arrivata in tempo</option><option value="c">c. Anche se ha l'influenza</option><option value="d">d. Neanche per sogno! Mi iscrivero' a Biologia!</option><option value="e">e. Duro' fino al 1946</option><option value="f">f. Gia'! L'ho capito quando ho visto Maria da sola</option><option value="g">g. Cosi', tanto per attaccare discorso</option></select>
+                    <select id="m103_7" class="matching-select" onchange="autoSave()"><option value="">-- Cevap 7 --</option><option value="a">a. Affinche' impari il lavoro</option><option value="b">b. Sia arrivata in tempo</option><option value="c">c. Anche se ha l'influenza</option><option value="d">d. Neanche per sogno! Mi iscrivero' a Biologia!</option><option value="e">e. Duro' fino al 1946</option><option value="f">f. Gia'! L'ho capito quando ho visto Maria da sola</option><option value="g">g. Cosi', tanto per attaccare discorso</option></select>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-submit" onclick="finishExam(false)">SINAVI BITIR VE SONUCU GONDER</button>
+    </div>
+</div>
+
+<div id="resultScreen">
+    <h2 id="resultTitle" style="color:#28a745;">Sinav Tamamlandi!</h2>
+    <div id="successContent">
+        <div id="scoreDisplay" style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:10px;padding:18px;margin:18px 0;text-align:left;font-size:0.93em;display:none;"></div>
+        <p>Sonuclariniz ogretmeninize iletildi. Sayfayi kapatabilirsiniz.</p>
+        <div style="font-size:3em; margin:20px;">&#127881;</div>
+    </div>
+    <div id="backupArea" style="display:none; margin-top:25px; border-top:2px dashed #ccc; padding-top:20px;">
+        <p style="color:#dc3545; font-weight:bold;">Otomatik gonderim basarisiz oldu.</p>
+        <p style="font-size:0.9em;">Asagidaki raporu kopyalayip WhatsApp'tan ogretmeninize gonderin:</p>
+        <textarea id="finalReport" class="result-box" readonly></textarea>
+        <button class="btn btn-copy" onclick="copyResult()">RAPORU KOPYALA</button>
+    </div>
+    <button class="btn btn-reset" onclick="hardReset()">Sistemi Sifirla</button>
+</div>
+
+<script>
+    const TEACHER_EMAIL = "corsikumcasaitalia@gmail.com";
+    const TEACHER_PASSWORD = "START";
+    const SAVE_KEY = "classif_p2_2025";
+    const LOCK_PREFIX = "LOCK_CP2_";
+    const EXAM_DURATION_MINUTES = 60;
+    const SECRET_HASHES = ["Um9tYV8xODYx","RGFudGVfMTI2NQ==","VmVyZGlfTmFidWNjbw=="];
+
+    const ANSWER_KEY = {
+        q54_1:'a',q54_2:'a', q55_1:'a',q55_2:'b', q56:'b',
+        q57_1:'c',q57_2:'b', q58:'b', q59:'c',
+        q60_1:'b',q60_2:'c', q61:'b', q62_1:'c',q62_2:'b',
+        q63_1:'c',q63_2:'a',q63_3:'a',
+        q64_1:'b',q64_2:'c', q65_1:'a',q65_2:'b',
+        q66_1:'a',q66_2:'c',q66_3:'c',
+        m67_1:'a',m67_2:'f',m67_3:'c',m67_4:'e',m67_5:'b',m67_6:'h',m67_7:'d',m67_8:'i',m67_9:'g',
+        q68_1:'a',q68_2:'c', q69_1:'c',q69_2:'c',
+        q70_1:'a',q70_2:'b', q71_1:'a',q71_2:'c',
+        q72_1:'a',q72_2:'a',q72_3:'b',
+        q73_1:'a',q73_2:'a',q73_3:'c',
+        q74:'b', q75_1:'b',q75_2:'c', q76:'c',
+        q77_1:'a',q77_2:'a',q77_3:'c',
+        m78_1:'b',m78_2:'d',m78_3:'g',m78_4:'e',m78_5:'a',m78_6:'h',m78_7:'c',m78_8:'f',
+        q80_1:'a',q80_2:'b', q81_1:'b',q81_2:'b',
+        q82_1:'c',q82_2:'b', q83_1:'b',q83_2:'b',
+        q84:'b', q85_1:'c',q85_2:'c',
+        q86_1:'a',q86_2:'b',q86_3:'b',
+        q87_1:'b',q87_2:'b', q88:'c',
+        q89_1:'a',q89_2:'b', q90:'c',
+        q91_1:'b',q91_2:'c', q92:'c',
+        m93_1:'a',m93_2:'e',m93_3:'d',m93_4:'f',m93_5:'g',m93_6:'b',m93_7:'c',
+        q94_1:'c',q94_2:'b', q95_1:'a',q95_2:'b',q95_3:'a',
+        q96_1:'a',q96_2:'b',
+        q97_1:'a',q97_2:'b',q97_3:'c',q97_4:'a',
+        q98_1:'b',q98_2:'c', q99_1:'b',q99_2:'a',
+        q100_1:'a',q100_2:'b',
+        q101_1:'a',q101_2:'c',q101_3:'c',
+        q102_1:'c',q102_2:'a',q102_3:'c',
+        m103_1:'d',m103_2:'f',m103_3:'e',m103_4:'a',m103_5:'g',m103_6:'c',m103_7:'b'
+    };
+
+    const SECTION_KEYS = {
+        s6:['q54_1','q54_2','q55_1','q55_2','q56','q57_1','q57_2','q58','q59','q60_1','q60_2','q61','q62_1','q62_2','q63_1','q63_2','q63_3','q64_1','q64_2','q65_1','q65_2','q66_1','q66_2','q66_3','m67_1','m67_2','m67_3','m67_4','m67_5','m67_6','m67_7','m67_8','m67_9'],
+        s7:['q68_1','q68_2','q69_1','q69_2','q70_1','q70_2','q71_1','q71_2','q72_1','q72_2','q72_3','q73_1','q73_2','q73_3','q74','q75_1','q75_2','q76','q77_1','q77_2','q77_3','m78_1','m78_2','m78_3','m78_4','m78_5','m78_6','m78_7','m78_8'],
+        s8:['q80_1','q80_2','q81_1','q81_2','q82_1','q82_2','q83_1','q83_2','q84','q85_1','q85_2','q86_1','q86_2','q86_3','q87_1','q87_2','q88','q89_1','q89_2','q90','q91_1','q91_2','q92','m93_1','m93_2','m93_3','m93_4','m93_5','m93_6','m93_7'],
+        s9:['q94_1','q94_2','q95_1','q95_2','q95_3','q96_1','q96_2','q97_1','q97_2','q97_3','q97_4','q98_1','q98_2','q99_1','q99_2','q100_1','q100_2','q101_1','q101_2','q101_3','q102_1','q102_2','q102_3','m103_1','m103_2','m103_3','m103_4','m103_5','m103_6','m103_7']
+    };
+    const MAX_SCORES = {s6:33, s7:30, s8:30, s9:30};
+    const THRESHOLDS = {s6:25, s7:23, s8:23, s9:23};
+
+    function calcScores(answers){
+        var s={s6:0,s7:0,s8:0,s9:0};
+        for(var sec in SECTION_KEYS){
+            SECTION_KEYS[sec].forEach(function(k){if(answers[k]&&answers[k]===ANSWER_KEY[k])s[sec]++;});
+        }
+        return s;
+    }
+
+    function determineLevel(sc){
+        if(sc.s9>=THRESHOLDS.s9) return {n:9,label:'9° Livello — C1.1'};
+        if(sc.s8>=THRESHOLDS.s8) return {n:8,label:'8° Livello — B2.2'};
+        if(sc.s7>=THRESHOLDS.s7) return {n:7,label:'7° Livello — B2.1'};
+        if(sc.s6>=THRESHOLDS.s6) return {n:6,label:'6° Livello — B1.2'};
+        return {n:0,label:'5° Livello veya altı (Parte 1 sonucuna bakınız)'};
+    }
+
+    let timerInterval, violationCount = 0, fiveMinWarningShown = false, currentName = "";
+
+    function isAdmin(n) { try { return SECRET_HASHES.includes(btoa(n)); } catch(e) { return false; } }
+
+    window.onload = function() {
+        var sn=localStorage.getItem(SAVE_KEY+"_name");
+        if(sn&&isAdmin(sn)){localStorage.removeItem(SAVE_KEY+"_status");localStorage.removeItem(SAVE_KEY+"_startTime");}
+        if(localStorage.getItem(SAVE_KEY+"_status")==="completed"){
+            document.getElementById("finalReport").value=localStorage.getItem(SAVE_KEY+"_report")||"";
+            showResultScreen(true); return;
+        }
+        if(localStorage.getItem(SAVE_KEY+"_startTime")){
+            document.getElementById("restoreBtn").style.display="block";
+            document.getElementById("restoreDivider").style.display="flex";
+        }
+    };
+
+    function checkStart(){
+        var n=document.getElementById("studentName").value.trim(),p=document.getElementById("examPassword").value.trim(),c=document.getElementById("honorCheck").checked,b=document.getElementById("startBtn");
+        var ok=n.length>1&&p.length>0&&c; b.disabled=!ok; b.style.opacity=ok?"1":"0.5";
+    }
+
+    function attemptLogin(){
+        var inputName=document.getElementById("studentName").value.trim();
+        var inputPass=document.getElementById("examPassword").value.trim();
+        if(isAdmin(inputName)){
+            localStorage.removeItem(SAVE_KEY+"_status");localStorage.removeItem(SAVE_KEY+"_startTime");localStorage.removeItem(LOCK_PREFIX+inputName);
+            startExam(inputName,false); return;
+        }
+        if(inputPass!==TEACHER_PASSWORD){alert("Hatali sinav sifresi!");return;}
+        if(inputName.length<2){alert("Lutfen adinizi giriniz.");return;}
+        if(localStorage.getItem(LOCK_PREFIX+inputName)==="completed"){alert("Bu isimle sinav zaten tamamlandi!");return;}
+        startExam(inputName,false);
+    }
+
+    function restoreSession(){
+        var sn=localStorage.getItem(SAVE_KEY+"_name");
+        if(!sn){alert("Kayitli oturum bulunamadi.");return;}
+        startExam(sn,true);
+    }
+
+    function startExam(name,isRestored){
+        currentName=name;
+        document.getElementById("displayName").innerText=name;
+        document.getElementById("loginScreen").style.display="none";
+        document.getElementById("examInterface").style.display="block";
+        document.querySelector(".container").style.display="block";
+        if(!isRestored){localStorage.setItem(SAVE_KEY+"_startTime",new Date().getTime());localStorage.setItem(SAVE_KEY+"_name",name);}
+        else{restoreAnswers();}
+        timerInterval=setInterval(updateTimer,1000); updateTimer(); window.scrollTo(0,0);
+    }
+
+    function updateTimer(){
+        var st=parseInt(localStorage.getItem(SAVE_KEY+"_startTime")); if(!st)return;
+        var elapsed=Math.floor((new Date().getTime()-st)/1000);
+        var remain=(EXAM_DURATION_MINUTES*60)-elapsed;
+        if(remain<=0){clearInterval(timerInterval);document.getElementById("timerDisplay").innerText="00:00";finishExam(true);return;}
+        var m=Math.floor(remain/60),s=remain%60;
+        document.getElementById("timerDisplay").innerText=(m<10?"0":"")+m+":"+(s<10?"0":"")+s;
+        if(remain<=300)document.getElementById("timerDisplay").style.color="#ffeb3b";
+        if(remain<=300&&!fiveMinWarningShown){fiveMinWarningShown=true;var b=document.getElementById("fiveMinBanner");b.style.display="block";setTimeout(function(){b.style.display="none";},8000);}
+        if(elapsed%15===0&&elapsed>0)autoSave();
+    }
+
+    function autoSave(){
+        var answers={};
+        document.querySelectorAll("input[type=radio]:checked").forEach(function(r){answers[r.name]=r.value;});
+        document.querySelectorAll(".matching-select").forEach(function(sel){if(sel.id&&sel.value)answers[sel.id]=sel.value;});
+        localStorage.setItem(SAVE_KEY+"_answers",JSON.stringify(answers));
+        var t=document.getElementById("saveToast"); t.style.opacity="1"; setTimeout(function(){t.style.opacity="0";},1500);
+    }
+
+    function restoreAnswers(){
+        var saved=localStorage.getItem(SAVE_KEY+"_answers"); if(!saved)return;
+        var answers=JSON.parse(saved);
+        for(var key in answers){
+            var val=answers[key];
+            var radio=document.querySelector("input[name='"+key+"'][value='"+val+"']");
+            if(radio){radio.checked=true;continue;}
+            var el=document.getElementById(key); if(el)el.value=val;
+        }
+    }
+
+    function generateReport(){
+        var sName=currentName||localStorage.getItem(SAVE_KEY+"_name")||"Bilinmiyor";
+        var answers={}; try{answers=JSON.parse(localStorage.getItem(SAVE_KEY+"_answers"))||{};}catch(e){}
+        var sc=calcScores(answers);
+        var lv=determineLevel(sc);
+        var r="[SEVIYE TESPIT - PARTE 2]\n";
+        r+="Ogrenci: "+sName+"\n";
+        r+="Tarih: "+new Date().toLocaleString("tr-TR")+"\n";
+        r+="Ihlal Sayisi: "+violationCount+"\n\n";
+        r+="=== PUAN TABLOSU ===\n";
+        r+="6° Livello (B1.2): "+sc.s6+"/"+MAX_SCORES.s6+" (esik: "+THRESHOLDS.s6+")\n";
+        r+="7° Livello (B2.1): "+sc.s7+"/"+MAX_SCORES.s7+" (esik: "+THRESHOLDS.s7+")\n";
+        r+="8° Livello (B2.2): "+sc.s8+"/"+MAX_SCORES.s8+" (esik: "+THRESHOLDS.s8+")\n";
+        r+="9° Livello (C1.1): "+sc.s9+"/"+MAX_SCORES.s9+" (esik: "+THRESHOLDS.s9+")\n";
+        r+=">>> ONERILEN SEVIYE: "+lv.label+" <<<\n\n";
+        function qr(n,b){var s="Q"+n+":"; if(b===1){return s+" "+(answers["q"+n]||"-")+"\n";} for(var k=1;k<=b;k++)s+=" ("+k+")"+(answers["q"+n+"_"+k]||"-"); return s+"\n";}
+        r+="--- 6 LIVELLO (B1.2) ---\n";
+        r+=qr(54,2);r+=qr(55,2);r+=qr(56,1);r+=qr(57,2);r+=qr(58,1);r+=qr(59,1);
+        r+=qr(60,2);r+=qr(61,1);r+=qr(62,2);r+=qr(63,3);r+=qr(64,2);r+=qr(65,2);r+=qr(66,3);
+        r+="Q67(M):"; for(var i=1;i<=9;i++)r+=" "+i+"="+(answers["m67_"+i]||"-"); r+="\n\n";
+        r+="--- 7 LIVELLO (B2.1) ---\n";
+        r+=qr(68,2);r+=qr(69,2);r+=qr(70,2);r+=qr(71,2);r+=qr(72,3);r+=qr(73,3);
+        r+=qr(74,1);r+=qr(75,2);r+=qr(76,1);r+=qr(77,3);
+        r+="Q78(M):"; for(var i=1;i<=8;i++)r+=" "+i+"="+(answers["m78_"+i]||"-"); r+="\n\n";
+        r+="--- 8 LIVELLO (B2.2) ---\n";
+        r+=qr(80,2);r+=qr(81,2);r+=qr(82,2);r+=qr(83,2);r+=qr(84,1);r+=qr(85,2);
+        r+=qr(86,3);r+=qr(87,2);r+=qr(88,1);r+=qr(89,2);r+=qr(90,1);r+=qr(91,2);r+=qr(92,1);
+        r+="Q93(M):"; for(var i=1;i<=7;i++)r+=" "+i+"="+(answers["m93_"+i]||"-"); r+="\n\n";
+        r+="--- 9 LIVELLO (C1.1) ---\n";
+        r+=qr(94,2);r+=qr(95,3);r+=qr(96,2);r+=qr(97,4);r+=qr(98,2);r+=qr(99,2);
+        r+=qr(100,2);r+=qr(101,3);r+=qr(102,3);
+        r+="Q103(M):"; for(var i=1;i<=7;i++)r+=" "+i+"="+(answers["m103_"+i]||"-"); r+="\n";
+        return r;
+    }
+
+    function finishExam(forced){
+        if(!forced&&!confirm("Sinavi bitirmek istediginize emin misiniz?"))return;
+        clearInterval(timerInterval); autoSave();
+        var btn=document.querySelector(".btn-submit"); btn.disabled=true; btn.innerHTML="Gonderiliyor...";
+        var sName=currentName||localStorage.getItem(SAVE_KEY+"_name")||"Bilinmiyor";
+        localStorage.setItem(LOCK_PREFIX+sName,"completed");
+        localStorage.setItem(SAVE_KEY+"_status","completed");
+        var answers={}; try{answers=JSON.parse(localStorage.getItem(SAVE_KEY+"_answers"))||{};}catch(e){}
+        var sc=calcScores(answers); var lv=determineLevel(sc);
+        var reportText=generateReport();
+        localStorage.setItem(SAVE_KEY+"_report",reportText);
+        localStorage.setItem(SAVE_KEY+"_scores",JSON.stringify({sc:sc,lv:lv}));
+        document.getElementById("finalReport").value=reportText;
+        var formData={_subject:"Seviye Tespit P2: "+sName,Ogrenci:sName,Sinav:"[SEVIYE TESPIT - PARTE 2]",Rapor:reportText};
+        fetch("https://formsubmit.co/ajax/"+TEACHER_EMAIL,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(formData)})
+        .then(function(r){return r.json();}).then(function(){showResultScreen(true,sc,lv);}).catch(function(){showResultScreen(false,sc,lv);});
+    }
+
+    function showResultScreen(isSuccess,sc,lv){
+        document.getElementById("loginScreen").style.display="none";
+        document.querySelector(".container").style.display="none";
+        document.getElementById("examInterface").style.display="none";
+        document.getElementById("resultScreen").style.display="block";
+        if(sc&&lv){
+            var saved=sc; if(!saved){try{var tmp=JSON.parse(localStorage.getItem(SAVE_KEY+"_scores"));saved=tmp.sc;lv=tmp.lv;}catch(e){}}
+            var bar=function(s,max,thr){var pct=Math.round(s/max*100);var ok=s>=thr;return '<div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:0.88em"><span>'+s+'/'+max+'</span><span style="color:'+(ok?'#28a745':'#dc3545')+'">'+pct+'% '+(ok?'✓ geçti':'✗ geçemedi')+'</span></div><div style="background:#e9ecef;border-radius:4px;height:8px"><div style="background:'+(ok?'#28a745':'#dc3545')+';width:'+Math.min(pct,100)+'%;height:8px;border-radius:4px"></div></div></div>';};
+            var html='<div style="font-weight:bold;margin-bottom:10px;font-size:1em;">📊 Puan Tablosu</div>';
+            html+='<div style="margin-bottom:4px;color:#555;font-size:0.85em;">6° Livello — B1.2 (eşik: '+THRESHOLDS.s6+'/'+MAX_SCORES.s6+')</div>'+bar(sc.s6,MAX_SCORES.s6,THRESHOLDS.s6);
+            html+='<div style="margin:8px 0 4px;color:#555;font-size:0.85em;">7° Livello — B2.1 (eşik: '+THRESHOLDS.s7+'/'+MAX_SCORES.s7+')</div>'+bar(sc.s7,MAX_SCORES.s7,THRESHOLDS.s7);
+            html+='<div style="margin:8px 0 4px;color:#555;font-size:0.85em;">8° Livello — B2.2 (eşik: '+THRESHOLDS.s8+'/'+MAX_SCORES.s8+')</div>'+bar(sc.s8,MAX_SCORES.s8,THRESHOLDS.s8);
+            html+='<div style="margin:8px 0 4px;color:#555;font-size:0.85em;">9° Livello — C1.1 (eşik: '+THRESHOLDS.s9+'/'+MAX_SCORES.s9+')</div>'+bar(sc.s9,MAX_SCORES.s9,THRESHOLDS.s9);
+            html+='<div style="margin-top:14px;padding:10px;background:'+(lv.n>0?'#d4edda':'#fff3cd')+';border-radius:8px;font-weight:bold;font-size:1.05em;text-align:center">🎯 Önerilen Seviye: '+lv.label+'</div>';
+            var sd=document.getElementById("scoreDisplay"); sd.innerHTML=html; sd.style.display="block";
+        }
+        if(!isSuccess){document.getElementById("resultTitle").innerText="Gonderim Basarisiz";document.getElementById("successContent").style.display="none";document.getElementById("backupArea").style.display="block";}
+    }
+
+    function copyResult(){
+        var ta=document.getElementById("finalReport"); ta.select(); document.execCommand("copy");
+        alert("Rapor kopyalandi! WhatsApp'tan ogretmeninize gonderin.");
+    }
+
+    function hardReset(){
+        var p=prompt("Sistem sifirlama sifresi:");
+        if(p==="cavolo"){
+            var sName=currentName||localStorage.getItem(SAVE_KEY+"_name");
+            [SAVE_KEY+"_answers",SAVE_KEY+"_startTime",SAVE_KEY+"_status",SAVE_KEY+"_name",SAVE_KEY+"_report"].forEach(function(k){localStorage.removeItem(k);});
+            if(sName)localStorage.removeItem(LOCK_PREFIX+sName);
+            location.reload();
+        } else{alert("Yanlis sifre!");}
+    }
+
+    document.addEventListener("contextmenu",function(e){e.preventDefault();});
+
+    var ayrilmaZamani;
+    document.addEventListener("visibilitychange",function(){
+        if(document.hidden){ayrilmaZamani=new Date().getTime();}
+        else{
+            if(ayrilmaZamani&&document.getElementById("examInterface").style.display!=="none"){
+                violationCount++;
+                var b=document.getElementById("cheatBanner"); b.style.display="block";
+                setTimeout(function(){b.style.display="none";},4000);
+                ayrilmaZamani=null; autoSave();
+            }
+        }
+    });
+</script>
+</body>
+</html>
