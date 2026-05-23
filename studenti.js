@@ -15,24 +15,5 @@ const OGRENCI_LISTESI = [
     "Mira Kartaca",
     "Nehir Özlü",
     "Baybars Ilgaz",
-    "Doruk Aşılıoğlu",
-    "Şükrü Özkan",
-    "Alper Özkan",
-    "Primo Studente",
-    "Secondo Studente",
-    "Terzo Studente",
-    "Quarto Studente",
-    "Quinto Studente",
-    "Sesto Studente",
-    "Settimo Studente",
-    "Ottavo Studente",
-    "Nono Studente",
-    "Decimo Studente",
-    "Undicesimo Studente",
-    "Dodicesimo Studente",
-    "Tredicesimo Studente",
-    "Quattordicesimo Studente",
-    "Quindicesimo Studente"
-
-
+    "Doruk Aşılıoğlu"
 ];
