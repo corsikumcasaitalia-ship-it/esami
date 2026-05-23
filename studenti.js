@@ -4,7 +4,7 @@
 
 const OGRENCI_LISTESI = [
     "ALİ KARAN ÖZKÖSEMEN",
-    "ATA BÜYÜKSARI",
+    "ALİ RIZA ATA BÜYÜKSARI",
     "ATA KÖSEGİL",
     "ATA ÖZTÜRK",
     "CEYDA ARACIOĞLU",
