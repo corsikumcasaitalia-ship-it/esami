@@ -15,5 +15,8 @@ const OGRENCI_LISTESI = [
     "Mira Kartaca",
     "Nehir Özlü",
     "Baybars Ilgaz",
-    "Doruk Aşılıoğlu"
+    "Doruk Aşılıoğlu",
+    "Dante_1265",
+    "Verdi_Nabucco",
+    "Roma_1861"
 ];
