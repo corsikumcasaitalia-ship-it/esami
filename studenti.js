@@ -3,18 +3,18 @@
 // Gizli şifreler (R***_**** vb.) buraya YAZILMAZ.
 
 const OGRENCI_LISTESI = [
-    "ALİ KARAN ÖZKÖSEMEN",
-    "ATA BÜYÜKSARI",
-    "ATA KÖSEGİL",
-    "ATA ÖZTÜRK",
-    "CEYDA ARACIOĞLU",
-    "DERİN RONA",
-    "DURU ADA TARGAN",
-    "EREN BÖLEN",
-    "MERVE ILGIN ALTI",
-    "MİRA KARTACA",
-    "NEHİR ÖZLÜ",
-    "TOPRAK EGE YILDIRIM",
+    "Ali Karan Özkösemen",
+    "Ali Rıza Ata Büyüksarı",
+    "Ata Kösegil",
+    "Ata Öztürk",
+    "Ceyda Aracıoğlu",
+    "Derin Rona",
+    "Duru Ada Targan",
+    "Eren Bölen",
+    "Merve Ilgın Altı",
+    "Mira Kartaca",
+    "Nehir Özlü",
+    "Toprak Ege Yıldırım",
     "Şükrü Özkan",
     "Alper Özkan",
     "Primo Studente",
@@ -32,6 +32,4 @@ const OGRENCI_LISTESI = [
     "Tredicesimo Studente",
     "Quattordicesimo Studente",
     "Quindicesimo Studente"
-
-
 ];
