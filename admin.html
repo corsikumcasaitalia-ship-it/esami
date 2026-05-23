@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Öğrenci Listesi</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 30px 15px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 560px;
+            padding: 35px 30px;
+        }
+        .logo { font-size: 2.2em; text-align: center; margin-bottom: 8px; }
+        h1 {
+            text-align: center;
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 6px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9em;
+            margin-bottom: 28px;
+        }
+
+        /* --- LOGIN --- */
+        #loginSection input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1.1em;
+            letter-spacing: 3px;
+            text-align: center;
+            margin-bottom: 14px;
+        }
+        #loginSection input:focus { outline: none; border-color: #3498db; }
+        #loginError {
+            color: #e74c3c;
+            font-size: 0.88em;
+            text-align: center;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        /* --- TOKEN SETUP --- */
+        #tokenSection {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        #tokenSection h3 {
+            color: #e65100;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        .steps { font-size: 0.88em; color: #555; line-height: 1.8; margin-bottom: 14px; }
+        .steps a { color: #1565c0; }
+        .steps ol { padding-left: 18px; }
+        #tokenSection input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #ffb74d;
+            border-radius: 7px;
+            font-size: 0.92em;
+            font-family: monospace;
+            margin-bottom: 10px;
+        }
+        #tokenSection input:focus { outline: none; border-color: #e65100; }
+        .token-saved-msg {
+            color: #2e7d32;
+            font-size: 0.85em;
+            font-weight: bold;
+            display: none;
+            margin-top: 6px;
+        }
+        .token-status {
+            font-size: 0.82em;
+            color: #2e7d32;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        /* --- STUDENT LIST --- */
+        #listSection h2 {
+            font-size: 1.05em;
+            color: #2c3e50;
+            margin-bottom: 14px;
+        }
+        #studentList {
+            list-style: none;
+            margin-bottom: 18px;
+        }
+        #studentList li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
+            border-radius: 7px;
+            margin-bottom: 7px;
+            background: #fafafa;
+            font-size: 0.95em;
+        }
+        #studentList li:hover { background: #f0f4ff; }
+        .del-btn {
+            background: none;
+            border: none;
+            color: #c0392b;
+            cursor: pointer;
+            font-size: 1.1em;
+            padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .del-btn:hover { background: #fdecea; }
+
+        /* --- ADD STUDENT --- */
+        .add-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 22px;
+        }
+        .add-row input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #ddd;
+            border-radius: 7px;
+            font-size: 0.95em;
+        }
+        .add-row input:focus { outline: none; border-color: #3498db; }
+
+        /* --- BUTTONS --- */
+        .btn {
+            display: inline-block;
+            padding: 11px 22px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+        }
+        .btn:hover { opacity: 0.88; transform: translateY(-1px); }
+        .btn:active { transform: translateY(0); }
+        .btn-blue  { background: #3498db; color: white; }
+        .btn-green { background: #27ae60; color: white; }
+        .btn-gray  { background: #95a5a6; color: white; }
+        .btn-full  { width: 100%; text-align: center; }
+
+        #saveBtn { width: 100%; margin-top: 4px; }
+        #saveStatus {
+            text-align: center;
+            font-size: 0.9em;
+            margin-top: 12px;
+            min-height: 22px;
+            font-weight: bold;
+        }
+        .status-ok  { color: #27ae60; }
+        .status-err { color: #e74c3c; }
+        .status-loading { color: #7f8c8d; }
+
+        .divider {
+            border: none;
+            border-top: 1px solid #eee;
+            margin: 22px 0;
+        }
+
+        #logoutBtn {
+            background: none;
+            border: none;
+            font-size: 0.8em;
+            color: #aaa;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto 0;
+        }
+        #logoutBtn:hover { color: #e74c3c; }
+
+        .hidden { display: none !important; }
+
+        .change-token-link {
+            font-size: 0.8em;
+            color: #999;
+            cursor: pointer;
+            text-decoration: underline;
+            display: block;
+            text-align: right;
+            margin-bottom: 14px;
+        }
+        .change-token-link:hover { color: #e65100; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="logo">🇮🇹</div>
+    <h1>Öğrenci Listesi Yönetimi</h1>
+    <p class="subtitle">İtalyan Kültür Merkezi — Admin Paneli</p>
+
+    <!-- LOGIN -->
+    <div id="loginSection">
+        <input type="password" id="pwInput" placeholder="Şifre" autocomplete="off">
+        <div id="loginError">Yanlış şifre. Tekrar deneyin.</div>
+        <button class="btn btn-blue btn-full" onclick="doLogin()">Giriş Yap</button>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminSection" class="hidden">
+
+        <!-- TOKEN SETUP (shown if no token saved) -->
+        <div id="tokenSection">
+            <h3>⚙️ Tek Seferlik Kurulum — GitHub Token</h3>
+            <div class="steps">
+                <p style="margin-bottom:8px;">Bu token sayesinde öğrenci listesini doğrudan buradan güncelleyebilirsin. Aşağıdaki adımları <strong>bir kez</strong> yapman yeterli:</p>
+                <ol>
+                    <li>github.com'a giriş yap</li>
+                    <li><strong>Settings → Developer settings → Personal access tokens → Fine-grained tokens</strong></li>
+                    <li><strong>Generate new token</strong>'a tıkla</li>
+                    <li>Token adı: <em>ikm-ogrenci-listesi</em> (istediğin ad)</li>
+                    <li><strong>Repository access:</strong> Only selected → <em>corsikumcasaitalia-ship-it/esami</em></li>
+                    <li><strong>Permissions → Repository permissions → Contents:</strong> Read and write</li>
+                    <li>Token'ı oluştur ve kopyala</li>
+                </ol>
+            </div>
+            <input type="password" id="tokenInput" placeholder="github_pat_xxxxxxxxxxxx">
+            <button class="btn btn-green btn-full" onclick="saveToken()">Token'ı Kaydet</button>
+            <div class="token-saved-msg" id="tokenSavedMsg">✅ Token kaydedildi!</div>
+        </div>
+
+        <!-- TOKEN OK STATE -->
+        <div id="tokenOkBar" class="hidden">
+            <div class="token-status" id="tokenStatus">✅ GitHub token aktif</div>
+            <span class="change-token-link" onclick="showTokenSetup()">Token'ı değiştir</span>
+        </div>
+
+        <!-- STUDENT LIST -->
+        <div id="listSection">
+            <h2>📋 Öğrenci Listesi (<span id="countBadge">0</span> kişi)</h2>
+            <ul id="studentList"></ul>
+
+            <div class="add-row">
+                <input type="text" id="newStudentInput" placeholder="Yeni öğrenci adı..." onkeydown="if(event.key==='Enter') addStudent()">
+                <button class="btn btn-blue" onclick="addStudent()">+ Ekle</button>
+            </div>
+
+            <hr class="divider">
+
+            <button class="btn btn-green" id="saveBtn" onclick="saveToGitHub()">💾 GitHub'a Kaydet</button>
+            <div id="saveStatus"></div>
+        </div>
+
+        <button id="logoutBtn" onclick="doLogout()">Çıkış Yap</button>
+    </div>
+</div>
+
+<script>
+    const TEACHER_PASSWORD = "START";
+    const REPO = "corsikumcasaitalia-ship-it/esami";
+    const FILE_PATH = "studenti.js";
+    const TOKEN_KEY = "ikm_admin_token";
+    const SESSION_KEY = "ikm_admin_session";
+
+    // Admin names that bypass the lock (same as exam pages)
+    const SECRET_HASHES = ["Um9tYV8xODYx","RGFudGVfMTI2NQ==","VmVyZGlfTmFidWNjbw=="];
+
+    let students = [];
+
+    // ── LOGIN ──────────────────────────────────────────────
+    document.getElementById('pwInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') doLogin();
+    });
+
+    function doLogin() {
+        const pw = document.getElementById('pwInput').value.trim();
+        if (pw === TEACHER_PASSWORD) {
+            sessionStorage.setItem(SESSION_KEY, '1');
+            showAdmin();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+            document.getElementById('pwInput').value = '';
+        }
+    }
+
+    function doLogout() {
+        sessionStorage.removeItem(SESSION_KEY);
+        document.getElementById('adminSection').classList.add('hidden');
+        document.getElementById('loginSection').classList.remove('hidden');
+        document.getElementById('pwInput').value = '';
+    }
+
+    function showAdmin() {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('adminSection').classList.remove('hidden');
+
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (token) {
+            document.getElementById('tokenSection').classList.add('hidden');
+            document.getElementById('tokenOkBar').classList.remove('hidden');
+            document.getElementById('tokenStatus').style.display = 'block';
+        }
+
+        loadStudentsFromGitHub();
+    }
+
+    // ── TOKEN ──────────────────────────────────────────────
+    function saveToken() {
+        const t = document.getElementById('tokenInput').value.trim();
+        if (!t) { alert('Token boş olamaz.'); return; }
+        localStorage.setItem(TOKEN_KEY, t);
+        document.getElementById('tokenSavedMsg').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('tokenSection').classList.add('hidden');
+            document.getElementById('tokenOkBar').classList.remove('hidden');
+            document.getElementById('tokenStatus').style.display = 'block';
+            loadStudentsFromGitHub();
+        }, 900);
+    }
+
+    function showTokenSetup() {
+        document.getElementById('tokenSection').classList.remove('hidden');
+        document.getElementById('tokenOkBar').classList.add('hidden');
+        document.getElementById('tokenInput').value = localStorage.getItem(TOKEN_KEY) || '';
+    }
+
+    // ── LOAD from GitHub ───────────────────────────────────
+    async function loadStudentsFromGitHub() {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (!token) return;
+
+        setStatus('Yükleniyor...', 'loading');
+        try {
+            const res = await fetch(
+                `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`,
+                { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } }
+            );
+            if (!res.ok) throw new Error(`GitHub hatası: ${res.status}`);
+            const data = await res.json();
+            const raw = atob(data.content.replace(/\n/g, ''));
+
+            // Parse names from the JS file
+            const match = raw.match(/OGRENCI_LISTESI\s*=\s*\[([\s\S]*?)\]/);
+            if (!match) throw new Error('Dosya formatı tanınamadı.');
+
+            students = match[1]
+                .split(',')
+                .map(s => s.trim().replace(/^["']|["']$/g, ''))
+                .filter(s => s.length > 0);
+
+            renderList();
+            setStatus('', '');
+        } catch(e) {
+            setStatus('❌ Yüklenemedi: ' + e.message, 'err');
+        }
+    }
+
+    // ── RENDER ─────────────────────────────────────────────
+    function renderList() {
+        const ul = document.getElementById('studentList');
+        ul.innerHTML = '';
+        students.forEach((name, i) => {
+            const li = document.createElement('li');
+            li.innerHTML = `<span>${escHtml(name)}</span><button class="del-btn" title="Sil" onclick="removeStudent(${i})">✕</button>`;
+            ul.appendChild(li);
+        });
+        document.getElementById('countBadge').textContent = students.length;
+    }
+
+    function escHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    // ── ADD / REMOVE ───────────────────────────────────────
+    function addStudent() {
+        const inp = document.getElementById('newStudentInput');
+        const name = inp.value.trim();
+        if (!name) return;
+        if (students.includes(name)) { alert('Bu isim zaten listede var.'); return; }
+        students.push(name);
+        renderList();
+        inp.value = '';
+        inp.focus();
+    }
+
+    function removeStudent(i) {
+        const name = students[i];
+        if (!confirm(`"${name}" listeden silinsin mi?`)) return;
+        students.splice(i, 1);
+        renderList();
+    }
+
+    // ── SAVE to GitHub ─────────────────────────────────────
+    async function saveToGitHub() {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (!token) { alert('Önce GitHub token kaydedin.'); showTokenSetup(); return; }
+        if (students.length === 0) { alert('Liste boş olamaz.'); return; }
+
+        setStatus('Kaydediliyor...', 'loading');
+        document.getElementById('saveBtn').disabled = true;
+
+        try {
+            // 1. Get current file SHA
+            const getRes = await fetch(
+                `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`,
+                { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } }
+            );
+            if (!getRes.ok) throw new Error(`SHA alınamadı: ${getRes.status}`);
+            const { sha } = await getRes.json();
+
+            // 2. Build new file content
+            // Keep admin/teacher names out (they're handled by SECRET_HASHES)
+            const adminNames = SECRET_HASHES.map(h => { try { return atob(h); } catch(e){ return null; } }).filter(Boolean);
+            const cleanStudents = students.filter(n => !adminNames.includes(n));
+
+            const lines = cleanStudents.map(n => `    "${n}"`).join(',\n');
+            const newContent =
+`// --- ÖĞRENCİ LİSTESİ DOSYASI ---
+// Buraya sadece öğrencilerin isimlerini yazınız.
+// Gizli şifreler (R***_**** vb.) buraya YAZILMAZ.
+
+const OGRENCI_LISTESI = [
+${lines}
+];
+`;
+            const encoded = btoa(unescape(encodeURIComponent(newContent)));
+
+            // 3. PUT updated file
+            const putRes = await fetch(
+                `https://api.github.com/repos/${REPO}/contents/${FILE_PATH}`,
+                {
+                    method: 'PUT',
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        Accept: 'application/vnd.github+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `Öğrenci listesi güncellendi (${new Date().toLocaleDateString('tr-TR')})`,
+                        content: encoded,
+                        sha: sha
+                    })
+                }
+            );
+
+            if (!putRes.ok) {
+                const err = await putRes.json();
+                throw new Error(err.message || `HTTP ${putRes.status}`);
+            }
+
+            setStatus('✅ Kaydedildi! GitHub Pages birkaç dakika içinde güncellenir.', 'ok');
+        } catch(e) {
+            setStatus('❌ Hata: ' + e.message, 'err');
+        } finally {
+            document.getElementById('saveBtn').disabled = false;
+        }
+    }
+
+    function setStatus(msg, type) {
+        const el = document.getElementById('saveStatus');
+        el.textContent = msg;
+        el.className = type === 'ok' ? 'status-ok' : type === 'err' ? 'status-err' : 'status-loading';
+    }
+
+    // ── AUTO-RESTORE SESSION ───────────────────────────────
+    if (sessionStorage.getItem(SESSION_KEY)) {
+        showAdmin();
+    }
+</script>
+</body>
+</html>
