@@ -103,18 +103,28 @@
         <div class="question-block">
             <span class="question-text">54. (1) ________ con Rita: (2) ________ domani verso le sette e mezzo al Bar Lume.</span>
             <div class="options-grid">
-                <label><input type="radio" name="q54" value="a" onchange="autoSave()"> a. (1) sente - (2) ci incontreremo</label>
-                <label><input type="radio" name="q54" value="b" onchange="autoSave()"> b. (1) ci ho sentito - (2) la incontrer&agrave;</label>
-                <label><input type="radio" name="q54" value="c" onchange="autoSave()"> c. (1) mi sono sentito - (2) ci incontreranno</label>
+                <div style="font-size:0.85em;color:#777;margin-bottom:2px;">(1)</div>
+                <label><input type="radio" name="q54_1" value="a" onchange="autoSave()"> a. sente</label>
+                <label><input type="radio" name="q54_1" value="b" onchange="autoSave()"> b. ci ho sentito</label>
+                <label><input type="radio" name="q54_1" value="c" onchange="autoSave()"> c. mi sono sentito</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q54_2" value="a" onchange="autoSave()"> a. ci incontreremo</label>
+                <label><input type="radio" name="q54_2" value="b" onchange="autoSave()"> b. la incontrer&agrave;</label>
+                <label><input type="radio" name="q54_2" value="c" onchange="autoSave()"> c. si incontreranno</label>
             </div>
         </div>
 
         <div class="question-block">
             <span class="question-text">55. La ditta di Angelo (1) ________ davvero in una brutta situazione economica, oggi per&ograve; (2) ________.</span>
             <div class="options-grid">
-                <label><input type="radio" name="q55" value="a" onchange="autoSave()"> a. (1) si trovava - (2) deve riprendersi</label>
-                <label><input type="radio" name="q55" value="b" onchange="autoSave()"> b. (1) ci trovava - (2) si &egrave; ripresa</label>
-                <label><input type="radio" name="q55" value="c" onchange="autoSave()"> c. (1) ci si trovava - (2) ha ripreso</label>
+                <div style="font-size:0.85em;color:#777;margin-bottom:2px;">(1)</div>
+                <label><input type="radio" name="q55_1" value="a" onchange="autoSave()"> a. si trovava</label>
+                <label><input type="radio" name="q55_1" value="b" onchange="autoSave()"> b. ci trovava</label>
+                <label><input type="radio" name="q55_1" value="c" onchange="autoSave()"> c. ci si trovava</label>
+                <div style="font-size:0.85em;color:#777;margin:8px 0 2px;">(2)</div>
+                <label><input type="radio" name="q55_2" value="a" onchange="autoSave()"> a. deve riprendersi</label>
+                <label><input type="radio" name="q55_2" value="b" onchange="autoSave()"> b. si &egrave; ripresa</label>
+                <label><input type="radio" name="q55_2" value="c" onchange="autoSave()"> c. ha ripreso</label>
             </div>
         </div>
 
@@ -728,7 +738,9 @@
         r+="Tarih: "+new Date().toLocaleString("tr-TR")+"\n";
         r+="Ihlal Sayisi: "+violationCount+"\n\n";
         r+="--- 6 LIVELLO (B1.2) ---\n";
-        for(var i=54;i<=66;i++)r+="Q"+i+": "+(answers["q"+i]||"-")+"\n";
+        r+="Q54: (1)"+(answers["q54_1"]||"-")+" (2)"+(answers["q54_2"]||"-")+"\n";
+        r+="Q55: (1)"+(answers["q55_1"]||"-")+" (2)"+(answers["q55_2"]||"-")+"\n";
+        for(var i=56;i<=66;i++)r+="Q"+i+": "+(answers["q"+i]||"-")+"\n";
         r+="Q67(M):"; for(var i=1;i<=9;i++)r+=" "+i+"="+(answers["m67_"+i]||"-"); r+="\n\n";
         r+="--- 7 LIVELLO (B2.1) ---\n";
         for(var i=68;i<=77;i++)r+="Q"+i+": "+(answers["q"+i]||"-")+"\n";
