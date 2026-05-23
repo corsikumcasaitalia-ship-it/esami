@@ -15,7 +15,7 @@ const OGRENCI_LISTESI = [
     "Mira Kartaca",
     "Nehir Özlü",
     "Baybars Ilgaz",
-    "Doruk Aşılıoğlu"
+    "Doruk Aşılıoğlu",
     "Şükrü Özkan",
     "Alper Özkan",
     "Primo Studente",
