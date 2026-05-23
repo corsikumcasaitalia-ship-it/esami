@@ -838,7 +838,11 @@
 
 <div id="resultScreen">
     <h2 id="resultTitle" style="color:#28a745;">Sinav Tamamlandi!</h2>
-    <div id="successContent"><p>Sonuclariniz ogretmeninize iletildi. Sayfayi kapatabilirsiniz.</p><div style="font-size:3em; margin:20px;">&#127881;</div></div>
+    <div id="successContent">
+        <div id="scoreDisplay" style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:10px;padding:18px;margin:18px 0;text-align:left;font-size:0.93em;display:none;"></div>
+        <p>Sonuclariniz ogretmeninize iletildi. Sayfayi kapatabilirsiniz.</p>
+        <div style="font-size:3em; margin:20px;">&#127881;</div>
+    </div>
     <div id="backupArea" style="display:none; margin-top:25px; border-top:2px dashed #ccc; padding-top:20px;">
         <p style="color:#dc3545; font-weight:bold;">Otomatik gonderim basarisiz oldu.</p>
         <p style="font-size:0.9em;">Asagidaki raporu kopyalayip WhatsApp'tan ogretmeninize gonderin:</p>
@@ -855,6 +859,64 @@
     const LOCK_PREFIX = "LOCK_CP2_";
     const EXAM_DURATION_MINUTES = 60;
     const SECRET_HASHES = ["Um9tYV8xODYx","RGFudGVfMTI2NQ==","VmVyZGlfTmFidWNjbw=="];
+
+    const ANSWER_KEY = {
+        q54_1:'a',q54_2:'a', q55_1:'a',q55_2:'b', q56:'b',
+        q57_1:'c',q57_2:'b', q58:'b', q59:'c',
+        q60_1:'b',q60_2:'c', q61:'b', q62_1:'c',q62_2:'b',
+        q63_1:'c',q63_2:'a',q63_3:'a',
+        q64_1:'b',q64_2:'c', q65_1:'a',q65_2:'b',
+        q66_1:'a',q66_2:'c',q66_3:'c',
+        m67_1:'a',m67_2:'f',m67_3:'c',m67_4:'e',m67_5:'b',m67_6:'h',m67_7:'d',m67_8:'i',m67_9:'g',
+        q68_1:'a',q68_2:'c', q69_1:'c',q69_2:'c',
+        q70_1:'a',q70_2:'b', q71_1:'a',q71_2:'c',
+        q72_1:'a',q72_2:'a',q72_3:'b',
+        q73_1:'a',q73_2:'a',q73_3:'c',
+        q74:'b', q75_1:'b',q75_2:'c', q76:'c',
+        q77_1:'a',q77_2:'a',q77_3:'c',
+        m78_1:'b',m78_2:'d',m78_3:'g',m78_4:'e',m78_5:'a',m78_6:'h',m78_7:'c',m78_8:'f',
+        q80_1:'a',q80_2:'b', q81_1:'b',q81_2:'b',
+        q82_1:'c',q82_2:'b', q83_1:'b',q83_2:'b',
+        q84:'b', q85_1:'c',q85_2:'c',
+        q86_1:'a',q86_2:'b',q86_3:'b',
+        q87_1:'b',q87_2:'b', q88:'c',
+        q89_1:'a',q89_2:'b', q90:'c',
+        q91_1:'b',q91_2:'c', q92:'c',
+        m93_1:'a',m93_2:'e',m93_3:'d',m93_4:'f',m93_5:'g',m93_6:'b',m93_7:'c',
+        q94_1:'c',q94_2:'b', q95_1:'a',q95_2:'b',q95_3:'a',
+        q96_1:'a',q96_2:'b',
+        q97_1:'a',q97_2:'b',q97_3:'c',q97_4:'a',
+        q98_1:'b',q98_2:'c', q99_1:'b',q99_2:'a',
+        q100_1:'a',q100_2:'b',
+        q101_1:'a',q101_2:'c',q101_3:'c',
+        q102_1:'c',q102_2:'a',q102_3:'c',
+        m103_1:'d',m103_2:'f',m103_3:'e',m103_4:'a',m103_5:'g',m103_6:'c',m103_7:'b'
+    };
+
+    const SECTION_KEYS = {
+        s6:['q54_1','q54_2','q55_1','q55_2','q56','q57_1','q57_2','q58','q59','q60_1','q60_2','q61','q62_1','q62_2','q63_1','q63_2','q63_3','q64_1','q64_2','q65_1','q65_2','q66_1','q66_2','q66_3','m67_1','m67_2','m67_3','m67_4','m67_5','m67_6','m67_7','m67_8','m67_9'],
+        s7:['q68_1','q68_2','q69_1','q69_2','q70_1','q70_2','q71_1','q71_2','q72_1','q72_2','q72_3','q73_1','q73_2','q73_3','q74','q75_1','q75_2','q76','q77_1','q77_2','q77_3','m78_1','m78_2','m78_3','m78_4','m78_5','m78_6','m78_7','m78_8'],
+        s8:['q80_1','q80_2','q81_1','q81_2','q82_1','q82_2','q83_1','q83_2','q84','q85_1','q85_2','q86_1','q86_2','q86_3','q87_1','q87_2','q88','q89_1','q89_2','q90','q91_1','q91_2','q92','m93_1','m93_2','m93_3','m93_4','m93_5','m93_6','m93_7'],
+        s9:['q94_1','q94_2','q95_1','q95_2','q95_3','q96_1','q96_2','q97_1','q97_2','q97_3','q97_4','q98_1','q98_2','q99_1','q99_2','q100_1','q100_2','q101_1','q101_2','q101_3','q102_1','q102_2','q102_3','m103_1','m103_2','m103_3','m103_4','m103_5','m103_6','m103_7']
+    };
+    const MAX_SCORES = {s6:33, s7:30, s8:30, s9:30};
+    const THRESHOLDS = {s6:25, s7:23, s8:23, s9:23};
+
+    function calcScores(answers){
+        var s={s6:0,s7:0,s8:0,s9:0};
+        for(var sec in SECTION_KEYS){
+            SECTION_KEYS[sec].forEach(function(k){if(answers[k]&&answers[k]===ANSWER_KEY[k])s[sec]++;});
+        }
+        return s;
+    }
+
+    function determineLevel(sc){
+        if(sc.s9>=THRESHOLDS.s9) return {n:9,label:'9° Livello — C1.1'};
+        if(sc.s8>=THRESHOLDS.s8) return {n:8,label:'8° Livello — B2.2'};
+        if(sc.s7>=THRESHOLDS.s7) return {n:7,label:'7° Livello — B2.1'};
+        if(sc.s6>=THRESHOLDS.s6) return {n:6,label:'6° Livello — B1.2'};
+        return {n:0,label:'5° Livello veya altı (Parte 1 sonucuna bakınız)'};
+    }
 
     let timerInterval, violationCount = 0, fiveMinWarningShown = false, currentName = "";
 
@@ -942,10 +1004,18 @@
     function generateReport(){
         var sName=currentName||localStorage.getItem(SAVE_KEY+"_name")||"Bilinmiyor";
         var answers={}; try{answers=JSON.parse(localStorage.getItem(SAVE_KEY+"_answers"))||{};}catch(e){}
+        var sc=calcScores(answers);
+        var lv=determineLevel(sc);
         var r="[SEVIYE TESPIT - PARTE 2]\n";
         r+="Ogrenci: "+sName+"\n";
         r+="Tarih: "+new Date().toLocaleString("tr-TR")+"\n";
         r+="Ihlal Sayisi: "+violationCount+"\n\n";
+        r+="=== PUAN TABLOSU ===\n";
+        r+="6° Livello (B1.2): "+sc.s6+"/"+MAX_SCORES.s6+" (esik: "+THRESHOLDS.s6+")\n";
+        r+="7° Livello (B2.1): "+sc.s7+"/"+MAX_SCORES.s7+" (esik: "+THRESHOLDS.s7+")\n";
+        r+="8° Livello (B2.2): "+sc.s8+"/"+MAX_SCORES.s8+" (esik: "+THRESHOLDS.s8+")\n";
+        r+="9° Livello (C1.1): "+sc.s9+"/"+MAX_SCORES.s9+" (esik: "+THRESHOLDS.s9+")\n";
+        r+=">>> ONERILEN SEVIYE: "+lv.label+" <<<\n\n";
         function qr(n,b){var s="Q"+n+":"; if(b===1){return s+" "+(answers["q"+n]||"-")+"\n";} for(var k=1;k<=b;k++)s+=" ("+k+")"+(answers["q"+n+"_"+k]||"-"); return s+"\n";}
         r+="--- 6 LIVELLO (B1.2) ---\n";
         r+=qr(54,2);r+=qr(55,2);r+=qr(56,1);r+=qr(57,2);r+=qr(58,1);r+=qr(59,1);
@@ -973,19 +1043,33 @@
         var sName=currentName||localStorage.getItem(SAVE_KEY+"_name")||"Bilinmiyor";
         localStorage.setItem(LOCK_PREFIX+sName,"completed");
         localStorage.setItem(SAVE_KEY+"_status","completed");
+        var answers={}; try{answers=JSON.parse(localStorage.getItem(SAVE_KEY+"_answers"))||{};}catch(e){}
+        var sc=calcScores(answers); var lv=determineLevel(sc);
         var reportText=generateReport();
         localStorage.setItem(SAVE_KEY+"_report",reportText);
+        localStorage.setItem(SAVE_KEY+"_scores",JSON.stringify({sc:sc,lv:lv}));
         document.getElementById("finalReport").value=reportText;
         var formData={_subject:"Seviye Tespit P2: "+sName,Ogrenci:sName,Sinav:"[SEVIYE TESPIT - PARTE 2]",Rapor:reportText};
         fetch("https://formsubmit.co/ajax/"+TEACHER_EMAIL,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(formData)})
-        .then(function(r){return r.json();}).then(function(){showResultScreen(true);}).catch(function(){showResultScreen(false);});
+        .then(function(r){return r.json();}).then(function(){showResultScreen(true,sc,lv);}).catch(function(){showResultScreen(false,sc,lv);});
     }
 
-    function showResultScreen(isSuccess){
+    function showResultScreen(isSuccess,sc,lv){
         document.getElementById("loginScreen").style.display="none";
         document.querySelector(".container").style.display="none";
         document.getElementById("examInterface").style.display="none";
         document.getElementById("resultScreen").style.display="block";
+        if(sc&&lv){
+            var saved=sc; if(!saved){try{var tmp=JSON.parse(localStorage.getItem(SAVE_KEY+"_scores"));saved=tmp.sc;lv=tmp.lv;}catch(e){}}
+            var bar=function(s,max,thr){var pct=Math.round(s/max*100);var ok=s>=thr;return '<div style="margin:6px 0"><div style="display:flex;justify-content:space-between;font-size:0.88em"><span>'+s+'/'+max+'</span><span style="color:'+(ok?'#28a745':'#dc3545')+'">'+pct+'% '+(ok?'✓ geçti':'✗ geçemedi')+'</span></div><div style="background:#e9ecef;border-radius:4px;height:8px"><div style="background:'+(ok?'#28a745':'#dc3545')+';width:'+Math.min(pct,100)+'%;height:8px;border-radius:4px"></div></div></div>';};
+            var html='<div style="font-weight:bold;margin-bottom:10px;font-size:1em;">📊 Puan Tablosu</div>';
+            html+='<div style="margin-bottom:4px;color:#555;font-size:0.85em;">6° Livello — B1.2 (eşik: '+THRESHOLDS.s6+'/'+MAX_SCORES.s6+')</div>'+bar(sc.s6,MAX_SCORES.s6,THRESHOLDS.s6);
+            html+='<div style="margin:8px 0 4px;color:#555;font-size:0.85em;">7° Livello — B2.1 (eşik: '+THRESHOLDS.s7+'/'+MAX_SCORES.s7+')</div>'+bar(sc.s7,MAX_SCORES.s7,THRESHOLDS.s7);
+            html+='<div style="margin:8px 0 4px;color:#555;font-size:0.85em;">8° Livello — B2.2 (eşik: '+THRESHOLDS.s8+'/'+MAX_SCORES.s8+')</div>'+bar(sc.s8,MAX_SCORES.s8,THRESHOLDS.s8);
+            html+='<div style="margin:8px 0 4px;color:#555;font-size:0.85em;">9° Livello — C1.1 (eşik: '+THRESHOLDS.s9+'/'+MAX_SCORES.s9+')</div>'+bar(sc.s9,MAX_SCORES.s9,THRESHOLDS.s9);
+            html+='<div style="margin-top:14px;padding:10px;background:'+(lv.n>0?'#d4edda':'#fff3cd')+';border-radius:8px;font-weight:bold;font-size:1.05em;text-align:center">🎯 Önerilen Seviye: '+lv.label+'</div>';
+            var sd=document.getElementById("scoreDisplay"); sd.innerHTML=html; sd.style.display="block";
+        }
         if(!isSuccess){document.getElementById("resultTitle").innerText="Gonderim Basarisiz";document.getElementById("successContent").style.display="none";document.getElementById("backupArea").style.display="block";}
     }
 
