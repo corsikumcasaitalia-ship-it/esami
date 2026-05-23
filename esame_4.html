@@ -491,7 +491,7 @@
         if (isMaster) {
             localStorage.removeItem(SAVE_KEY + "_status");
             localStorage.removeItem(SAVE_KEY + "_startTime");
-            localStorage.removeItem("LOCK_" + inputName);
+            localStorage.removeItem("LOCK_" + SAVE_KEY + "_" + inputName);
             startExam(false);
             return;
         }
@@ -499,7 +499,7 @@
         // Normal Öğrenci Girişi
         const passHash = await sha256(inputPass);
         if (passHash !== TEACHER_PASSWORD_HASH) { alert("❌ HATALI SINAV ŞİFRESİ!"); return; }
-        if (localStorage.getItem("LOCK_" + inputName) === "completed") { alert("⛔ BU ÖĞRENCİ SINAVI ZATEN TAMAMLADI!"); return; }
+        if (localStorage.getItem("LOCK_" + SAVE_KEY + "_" + inputName) === "completed") { alert("⛔ BU ÖĞRENCİ SINAVI ZATEN TAMAMLADI!"); return; }
 
         // Listede var mı kontrolü
         let liste = (typeof OGRENCI_LISTESI !== 'undefined') ? OGRENCI_LISTESI : MANUEL_OGRENCILER;
@@ -664,7 +664,7 @@
         submitBtn.innerHTML = '<div class="spinner"></div> Lütfen Bekleyin...';
 
         let sName = document.getElementById('displayName').innerText;
-        localStorage.setItem("LOCK_" + sName, "completed");
+        localStorage.setItem("LOCK_" + SAVE_KEY + "_" + sName, "completed");
         localStorage.setItem(SAVE_KEY + "_status", "completed");
 
         let reportText = await generateReport();
