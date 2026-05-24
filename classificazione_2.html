@@ -50,40 +50,40 @@
 <body>
 
 <div id="saveToast" class="save-toast">Kaydedildi</div>
-<div id="cheatBanner" class="cheat-alert">UYARI: EKRANDAN AYRILDINIZ! Bu durum kayit altina alindi.</div>
+<div id="cheatBanner" class="cheat-alert">UYARI: EKRANDAN AYRILDINIZ! Bu durum kayıt altına alındı.</div>
 <div id="fiveMinBanner" class="five-min-banner">SON 5 DAKIKA! Cevaplarınızı kontrol edin.</div>
 
 <div id="loginScreen">
     <img src="https://it-istanbul.com/wp-content/uploads/2021/04/it-istanbul-logo.png" class="logo" alt="IKM Logo" onerror="this.style.display='none'">
-    <h1>&#127470;&#127481; Seviye Tespit Sinavi</h1>
+    <h1>&#127470;&#127481; Seviye Tespit Sınavı</h1>
     <p style="color:#e67e22; font-weight:bold; margin:0;">Parte 2 &mdash; Livello 6&rarr;9 (B1.2 &rarr; C1.1)</p>
     <p style="color:#666; font-size:0.9em;">50 soru &middot; 60 dakika</p>
 
     <div class="tech-note">
-        <strong>Onemli:</strong> Sayfa kapansa bile ayni cihaz + ayni tarayiciyla tekrar giris yapin, kaldığınız yerden devam edersiniz.
+        <strong>Önemli:</strong> Sayfa kapansa bile aynı cihaz + aynı tarayıcıyla tekrar giriş yapın, kaldığınız yerden devam edersiniz.
     </div>
 
     <button id="restoreBtn" class="btn btn-restore" onclick="restoreSession()">
-        Onceki oturumunuz bulundu &mdash; kaldiginiz yerden devam edin
+        Önceki oturumunuz bulundu &mdash; kaldığınız yerden devam edin
     </button>
-    <div id="restoreDivider" class="restore-divider" style="display:none;">veya yeni oturum basla</div>
+    <div id="restoreDivider" class="restore-divider" style="display:none;">veya yeni oturum başla</div>
 
     <div id="newSessionForm">
         <div style="background:#fff3e0; border:2px solid #e67e22; padding:12px; border-radius:8px; margin-bottom:15px; text-align:left;">
-            <label style="color:#e67e22; font-weight:bold;">Sinav Giris Kodu:</label>
-            <input type="password" id="examPassword" placeholder="Ogretmeninizden aldiginiz sifre..." oninput="checkStart()">
+            <label style="color:#e67e22; font-weight:bold;">Sınav Giriş Kodu:</label>
+            <input type="password" id="examPassword" placeholder="Öğretmeninizden aldığınız şifre..." oninput="checkStart()">
         </div>
         <div style="text-align:left;">
-            <label><strong>Adiniz Soyadiniz:</strong></label>
-            <input type="text" id="studentName" placeholder="Adinizi ve soyadinizi yaziniz..." oninput="checkStart()">
+            <label><strong>Adınız Soyadınız:</strong></label>
+            <input type="text" id="studentName" placeholder="Adınızı ve soyadınızı yazınız..." oninput="checkStart()">
         </div>
         <div class="honor-code">
             <label>
                 <input type="checkbox" id="honorCheck" onchange="checkStart()">
-                <span>Sekme degistirmeyecegimi ve kopya cekmeyecegimi taahut ediyorum.</span>
+                <span>Sekme değiştirmeyeceğimi ve kopya çekmeyeceğimi taahhüt ediyorum.</span>
             </label>
         </div>
-        <button id="startBtn" class="btn btn-start" onclick="attemptLogin()" disabled style="opacity:0.5;">GIRIS YAP VE SINAVI BASLAT</button>
+        <button id="startBtn" class="btn btn-start" onclick="attemptLogin()" disabled style="opacity:0.5;">GİRİŞ YAP VE SINAVI BAŞLAT</button>
     </div>
 </div>
 
@@ -832,24 +832,24 @@
             </div>
         </div>
 
-        <button class="btn btn-submit" onclick="finishExam(false)">SINAVI BITIR VE SONUCU GONDER</button>
+        <button class="btn btn-submit" onclick="finishExam(false)">SINAVI BİTİR VE SONUCU GÖNDER</button>
     </div>
 </div>
 
 <div id="resultScreen">
-    <h2 id="resultTitle" style="color:#28a745;">Sinav Tamamlandi!</h2>
+    <h2 id="resultTitle" style="color:#28a745;">Sınav Tamamlandı!</h2>
     <div id="successContent">
         <div id="scoreDisplay" style="background:#f8f9fa;border:1px solid #dee2e6;border-radius:10px;padding:18px;margin:18px 0;text-align:left;font-size:0.93em;display:none;"></div>
-        <p>Sonuclariniz ogretmeninize iletildi. Sayfayi kapatabilirsiniz.</p>
+        <p>Sonuçlarınız öğretmeninize iletildi. Sayfayı kapatabilirsiniz.</p>
         <div style="font-size:3em; margin:20px;">&#127881;</div>
     </div>
     <div id="backupArea" style="display:none; margin-top:25px; border-top:2px dashed #ccc; padding-top:20px;">
-        <p style="color:#dc3545; font-weight:bold;">Otomatik gonderim basarisiz oldu.</p>
-        <p style="font-size:0.9em;">Asagidaki raporu kopyalayip WhatsApp'tan ogretmeninize gonderin:</p>
+        <p style="color:#dc3545; font-weight:bold;">Otomatik gönderim başarısız oldu.</p>
+        <p style="font-size:0.9em;">Aşağıdaki raporu kopyalayıp WhatsApp'tan öğretmeninize gönderin:</p>
         <textarea id="finalReport" class="result-box" readonly></textarea>
         <button class="btn btn-copy" onclick="copyResult()">RAPORU KOPYALA</button>
     </div>
-    <button class="btn btn-reset" onclick="hardReset()">Sistemi Sifirla</button>
+    <button class="btn btn-reset" onclick="hardReset()">Sistemi Sıfırla</button>
 </div>
 
 <script>
@@ -947,9 +947,9 @@
             localStorage.removeItem(SAVE_KEY+"_status");localStorage.removeItem(SAVE_KEY+"_startTime");localStorage.removeItem(LOCK_PREFIX+inputName);
             startExam(inputName,false); return;
         }
-        if(inputPass!==TEACHER_PASSWORD){alert("Hatali sinav sifresi!");return;}
-        if(inputName.length<2){alert("Lutfen adinizi giriniz.");return;}
-        if(localStorage.getItem(LOCK_PREFIX+inputName)==="completed"){alert("Bu isimle sinav zaten tamamlandi!");return;}
+        if(inputPass!==TEACHER_PASSWORD){alert("Hatalı sınav şifresi!");return;}
+        if(inputName.length<2){alert("Lütfen adınızı giriniz.");return;}
+        if(localStorage.getItem(LOCK_PREFIX+inputName)==="completed"){alert("Bu isimle sınav zaten tamamlandı!");return;}
         startExam(inputName,false);
     }
 
@@ -1007,14 +1007,14 @@
         var sc=calcScores(answers);
         var lv=determineLevel(sc);
         var r="[SEVIYE TESPIT - PARTE 2]\n";
-        r+="Ogrenci: "+sName+"\n";
+        r+="Öğrenci: "+sName+"\n";
         r+="Tarih: "+new Date().toLocaleString("tr-TR")+"\n";
-        r+="Ihlal Sayisi: "+violationCount+"\n\n";
+        r+="İhlal Sayısı: "+violationCount+"\n\n";
         r+="=== PUAN TABLOSU ===\n";
-        r+="6° Livello (B1.2): "+sc.s6+"/"+MAX_SCORES.s6+" (esik: "+THRESHOLDS.s6+")\n";
-        r+="7° Livello (B2.1): "+sc.s7+"/"+MAX_SCORES.s7+" (esik: "+THRESHOLDS.s7+")\n";
-        r+="8° Livello (B2.2): "+sc.s8+"/"+MAX_SCORES.s8+" (esik: "+THRESHOLDS.s8+")\n";
-        r+="9° Livello (C1.1): "+sc.s9+"/"+MAX_SCORES.s9+" (esik: "+THRESHOLDS.s9+")\n";
+        r+="6° Livello (B1.2): "+sc.s6+"/"+MAX_SCORES.s6+" (eşik: "+THRESHOLDS.s6+")\n";
+        r+="7° Livello (B2.1): "+sc.s7+"/"+MAX_SCORES.s7+" (eşik: "+THRESHOLDS.s7+")\n";
+        r+="8° Livello (B2.2): "+sc.s8+"/"+MAX_SCORES.s8+" (eşik: "+THRESHOLDS.s8+")\n";
+        r+="9° Livello (C1.1): "+sc.s9+"/"+MAX_SCORES.s9+" (eşik: "+THRESHOLDS.s9+")\n";
         r+=">>> ONERILEN SEVIYE: "+lv.label+" <<<\n\n";
         function qr(n,b){var s="Q"+n+":"; if(b===1){return s+" "+(answers["q"+n]||"-")+"\n";} for(var k=1;k<=b;k++)s+=" ("+k+")"+(answers["q"+n+"_"+k]||"-"); return s+"\n";}
         r+="--- 6 LIVELLO (B1.2) ---\n";
@@ -1037,9 +1037,9 @@
     }
 
     function finishExam(forced){
-        if(!forced&&!confirm("Sinavi bitirmek istediginize emin misiniz?"))return;
+        if(!forced&&!confirm("Sınavı bitirmek istediğinize emin misiniz?"))return;
         clearInterval(timerInterval); autoSave();
-        var btn=document.querySelector(".btn-submit"); btn.disabled=true; btn.innerHTML="Gonderiliyor...";
+        var btn=document.querySelector(".btn-submit"); btn.disabled=true; btn.innerHTML="Gönderiliyor...";
         var sName=currentName||localStorage.getItem(SAVE_KEY+"_name")||"Bilinmiyor";
         localStorage.setItem(LOCK_PREFIX+sName,"completed");
         localStorage.setItem(SAVE_KEY+"_status","completed");
@@ -1049,7 +1049,7 @@
         localStorage.setItem(SAVE_KEY+"_report",reportText);
         localStorage.setItem(SAVE_KEY+"_scores",JSON.stringify({sc:sc,lv:lv}));
         document.getElementById("finalReport").value=reportText;
-        var formData={_subject:"Seviye Tespit P2: "+sName,Ogrenci:sName,Sinav:"[SEVIYE TESPIT - PARTE 2]",Rapor:reportText};
+        var formData={_subject:"Seviye Tespit P2: "+sName,"Öğrenci":sName,"Sınav":"[SEVIYE TESPIT - PARTE 2]","Rapor":reportText};
         fetch("https://formsubmit.co/ajax/"+TEACHER_EMAIL,{method:"POST",headers:{"Content-Type":"application/json","Accept":"application/json"},body:JSON.stringify(formData)})
         .then(function(r){return r.json();}).then(function(){showResultScreen(true,sc,lv);}).catch(function(){showResultScreen(false,sc,lv);});
     }
@@ -1070,22 +1070,22 @@
             html+='<div style="margin-top:14px;padding:10px;background:'+(lv.n>0?'#d4edda':'#fff3cd')+';border-radius:8px;font-weight:bold;font-size:1.05em;text-align:center">🎯 Önerilen Seviye: '+lv.label+'</div>';
             var sd=document.getElementById("scoreDisplay"); sd.innerHTML=html; sd.style.display="block";
         }
-        if(!isSuccess){document.getElementById("resultTitle").innerText="Gonderim Basarisiz";document.getElementById("successContent").style.display="none";document.getElementById("backupArea").style.display="block";}
+        if(!isSuccess){document.getElementById("resultTitle").innerText="Gönderim Başarısız";document.getElementById("successContent").style.display="none";document.getElementById("backupArea").style.display="block";}
     }
 
     function copyResult(){
         var ta=document.getElementById("finalReport"); ta.select(); document.execCommand("copy");
-        alert("Rapor kopyalandi! WhatsApp'tan ogretmeninize gonderin.");
+        alert("Rapor kopyalandı! WhatsApp'tan öğretmeninize gönderin.");
     }
 
     function hardReset(){
-        var p=prompt("Sistem sifirlama sifresi:");
+        var p=prompt("Sistem sıfırlama şifresi:");
         if(p==="cavolo"){
             var sName=currentName||localStorage.getItem(SAVE_KEY+"_name");
             [SAVE_KEY+"_answers",SAVE_KEY+"_startTime",SAVE_KEY+"_status",SAVE_KEY+"_name",SAVE_KEY+"_report"].forEach(function(k){localStorage.removeItem(k);});
             if(sName)localStorage.removeItem(LOCK_PREFIX+sName);
             location.reload();
-        } else{alert("Yanlis sifre!");}
+        } else{alert("Yanlış şifre!");}
     }
 
     document.addEventListener("contextmenu",function(e){e.preventDefault();});
